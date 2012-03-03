@@ -79,8 +79,9 @@ function easy_og_site_name() {
 // og:description
 function easy_og_description() {
 	if ( !is_front_page() ) {
-		$excerpt = get_the_excerpt();
-		echo '<meta property="og:description" content="' . wp_trim_words($excerpt, 20) . '">' . "\n";
+		global $posts;
+		
+		echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
 	} else { 
 		echo '<meta property="og:description" content="Long description of site.">' . "\n";
 	}
