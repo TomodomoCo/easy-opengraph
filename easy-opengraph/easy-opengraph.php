@@ -4,7 +4,7 @@ Plugin Name: VPM Easy OpenGraph
 Plugin URI: http://www.vanpattenmedia.com/
 Description: "Set it and forget it" Facebook OpenGraph
 Author: Van Patten Media
-Version: 0.9
+Version: 0.5
 Author URI: http://www.vanpattenmedia.com/
 */
 
@@ -56,12 +56,12 @@ function easy_og_image() {
 	if ( function_exists('get_post_thumbnail_id') ) {
 		$image_id = get_post_thumbnail_id();
 		$image_url = wp_get_attachment_image_src($image_id,'large', true);
-		echo '<meta property="og:image" content="' . home_url() . $image_url[0] . '/img/opengraph.png">' . "\n";
+		echo '<meta property="og:image" content="' . home_url() . $image_url[0] . '">' . "\n";
 	} else {
 		if ( isset( $easy_og_image_default ) ) {
 			
 		} else {
-			echo '<meta property="og:image" content="' . home_url() . get_bloginfo('template_directory') . '/img/opengraph.png">' . "\n";
+			echo '<meta property="og:image" content="' . home_url() . get_bloginfo('template_directory') . '/screenshot.jpg">' . "\n";
 		}
 	}
 }
@@ -86,14 +86,14 @@ function easy_og_description() {
 	}
 }
 
-// og:admins 
-function easy_og_admins() {
-	echo '<meta property="fb:admins" content="">' . "\n";
-}
-
 // og:locale
 function easy_og_locale() {
 	echo '<meta property="og:locale" content="en_US">' . "\n";
+}
+
+// fb:admins 
+function easy_og_fb_admins() {
+	echo '<meta property="fb:admins" content="">' . "\n";
 }
 
 
@@ -109,8 +109,8 @@ add_action('wp_head', 'easy_og_image');
 add_action('wp_head', 'easy_og_url');
 add_action('wp_head', 'easy_og_site_name');
 add_action('wp_head', 'easy_og_description');
-add_action('wp_head', 'easy_og_admins');
 add_action('wp_head', 'easy_og_locale');
+add_action('wp_head', 'easy_og_fb_admins');
 
 /**
  *
