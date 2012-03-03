@@ -6,8 +6,9 @@
  *
  */
 
-$vpm_api_url = 'https://updates.vanpattenmedia.com/';
-$og_plugin_slug = basename(dirname(__FILE__));
+// Plugin prefix = easy_og (find and replace me)
+$easy_og_api_url = 'https://updates.vanpattenmedia.com/';
+$easy_og_plugin_slug = basename(dirname(__FILE__));
 
 
 /**
@@ -17,13 +18,35 @@ $og_plugin_slug = basename(dirname(__FILE__));
  *
  */
  
-function remove_plugin_transient() {
-	$file = basename( $_SERVER['PHP_SELF'] );
-	if ( $file == 'update-core.php' ) {
-		set_site_transient('update_plugins', null);
+/* if ( !function_exists('remove_plugin_transient') ) {
+	function remove_plugin_transient() {
+		$file = basename( $_SERVER['PHP_SELF'] );
+		if ( $file == 'update-core.php' ) {
+			set_site_transient('update_plugins', null);
+		}
 	}
+	add_action('admin_head', 'remove_plugin_transient');
+} */
+
+
+/**
+ *
+ * Set up the request.
+ *
+ */
+
+function easy_og_request($action, $args) {
+	global $wp_version;
+	
+	return array(
+		'body' => array(
+			'action' => $action, 
+			'request' => serialize($args),
+			'api-key' => md5(get_bloginfo('url'))
+		),
+		'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url')
+	);	
 }
-add_action('admin_head', 'remove_plugin_transient');
 
 
 /**
@@ -32,31 +55,31 @@ add_action('admin_head', 'remove_plugin_transient');
  *
  */
  
-function check_for_plugin_update($checked_data) {
-	global $vpm_api_url, $og_plugin_slug;
+function easy_og_update_check($checked_data) {
+	global $easy_og_api_url, $easy_og_plugin_slug;
 	
 	if (empty($checked_data->checked))
 		return $checked_data;
 	
 	$request_args = array(
-		'slug' => $og_plugin_slug,
-		'version' => $checked_data->checked[$og_plugin_slug .'/'. $og_plugin_slug .'.php'],
+		'slug' => $easy_og_plugin_slug,
+		'version' => $checked_data->checked[$easy_og_plugin_slug .'/'. $easy_og_plugin_slug .'.php'],
 	);
 	
-	$request_string = prepare_request('basic_check', $request_args);
+	$request_string = easy_og_request('basic_check', $request_args);
 	
 	// Start checking for an update
-	$raw_response = wp_remote_post($vpm_api_url, $request_string);
+	$raw_response = wp_remote_post($easy_og_api_url, $request_string);
 	
 	if (!is_wp_error($raw_response) && ($raw_response['response']['code'] == 200))
 		$response = unserialize($raw_response['body']);
 	
 	if (is_object($response) && !empty($response)) // Feed the update data into WP updater
-		$checked_data->response[$og_plugin_slug .'/'. $og_plugin_slug .'.php'] = $response;
+		$checked_data->response[$easy_og_plugin_slug .'/'. $easy_og_plugin_slug .'.php'] = $response;
 	
 	return $checked_data;
 }
-add_filter('pre_set_site_transient_update_plugins', 'check_for_plugin_update');
+add_filter('pre_set_site_transient_update_plugins', 'easy_og_update_check');
 
 
 /**
@@ -65,20 +88,20 @@ add_filter('pre_set_site_transient_update_plugins', 'check_for_plugin_update');
  *
  */
 
-function my_plugin_api_call($def, $action, $args) {
-	global $og_plugin_slug, $vpm_api_url;
+function easy_og_api_call($def, $action, $args) {
+	global $easy_og_plugin_slug, $easy_og_api_url;
 	
-	if ($args->slug != $og_plugin_slug)
+	if ($args->slug != $easy_og_plugin_slug)
 		return false;
 	
 	// Get the current version
 	$plugin_info = get_site_transient('update_plugins');
-	$current_version = $plugin_info->checked[$og_plugin_slug .'/'. $og_plugin_slug .'.php'];
+	$current_version = $plugin_info->checked[$easy_og_plugin_slug .'/'. $easy_og_plugin_slug .'.php'];
 	$args->version = $current_version;
 	
-	$request_string = prepare_request($action, $args);
+	$request_string = easy_og_request($action, $args);
 	
-	$request = wp_remote_post($vpm_api_url, $request_string);
+	$request = wp_remote_post($easy_og_api_url, $request_string);
 	
 	if (is_wp_error($request)) {
 		$res = new WP_Error('plugins_api_failed', __('An Unexpected HTTP Error occurred during the API request.</p> <p><a href="?" onclick="document.location.reload(); return false;">Try again</a>'), $request->get_error_message());
@@ -91,17 +114,4 @@ function my_plugin_api_call($def, $action, $args) {
 	
 	return $res;
 }
-add_filter('plugins_api', 'my_plugin_api_call', 10, 3);
-
-function prepare_request($action, $args) {
-	global $wp_version;
-	
-	return array(
-		'body' => array(
-			'action' => $action, 
-			'request' => serialize($args),
-			'api-key' => md5(get_bloginfo('url'))
-		),
-		'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo('url')
-	);	
-}
+add_filter('plugins_api', 'easy_og_api_call', 10, 3);
