@@ -20,7 +20,7 @@ function easy_og_settings() {
 	?>
 	<div class="wrap">
 	<div class="icon32" id="icon-opengraph"><br></div>
-	<h2>Easy OpenGraph</h2>
+	<h2>Easy OpenGraph Settings</h2>
 	<p><strong>Easy OpenGraph</strong> is ready to work out of the box, but we've provided some settings below so you can personalize the output.</p>
 	<form method="post" action="options.php">
 		<h3>Title, Type, Image, and URL</h3>
