@@ -49,47 +49,48 @@ function easy_og() {
 	// og:type
 	if ( is_single() ) {
 		echo '<meta property="og:type" content="article">' . "\n";
+		
+		global $posts;
+		
+		// article:published_time
+		echo '<meta property="article:published_time" content="' . get_the_time('c') . '">' . "\n";
+		
+		// article:modified_time
+		echo '<meta property="article:modified_time" content="' . get_the_modified_time('c') . '">' . "\n";
+		
+		// article:author
+		echo '<meta property="article:author" content="' . get_author_posts_url($posts[0]->post_author) . '">' . "\n";
+		
+		$posttags = get_the_tags($posts->ID);
+		if ($posttags) {
+			foreach($posttags as $tag) {
+				echo '<meta property="article:tag" content="' . $tag->name . '">' . "\n";
+			}
+		}
+			
+	} elseif ( is_author() ) {
+		echo '<meta property="og:type" content="profile">' . "\n";
 	} else {
 		echo '<meta property="og:type" content="website">' . "\n";
 	}
 	
-	// article:published_time
-	if ( is_single() ) {
-		global $posts;
-		
-		echo '<meta property="article:published_time" content="' . get_the_time('c') . '">' . "\n";
-	}
-	
-	// article:modified_time
-	if ( is_single() ) {
-		global $posts;
-	
-		echo '<meta property="article:modified_time" content="' . get_the_modified_time('c') . '">' . "\n";
-	}
-	
-	// article:author
-	if ( is_single() ) {
-		global $posts;
-		
-		echo '<meta property="article:author" content="' . get_author_posts_url($posts[0]->post_author) . '">' . "\n";
-	}
-	
-	// og:article:tag
-	if ( is_single() ) {
-	
-	}
-	
 	// og:image
-	if ( function_exists('get_post_thumbnail_id') ) {
-		$image_id = get_post_thumbnail_id();
-		$image_url = wp_get_attachment_image_src($image_id,'large', true);
-		echo '<meta property="og:image" content="' . home_url() . $image_url[0] . '">' . "\n";
-	} else {
-		if ( isset( $easy_og_image_default ) ) {
-			
+	if ( !is_author() ) {
+		if ( function_exists('get_post_thumbnail_id') && get_post_thumbnail_id() ) {
+			$image_id = get_post_thumbnail_id();
+			$image_url = wp_get_attachment_image_src($image_id,'large', true);
+			echo '<meta property="og:image" content="' . home_url() . $image_url[0] . '">' . "\n";
 		} else {
-			echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . '/img/screenshot.jpg">' . "\n";
+			if ( isset( $easy_og_image_default ) ) {
+				$image_url = wp_get_attachment_image_src($easy_og_image_id,'large', true);
+				echo '<meta property="og:image" content="' . home_url() . $image_url[0] . '">' . "\n";
+			} else {
+				echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . '/img/screenshot.jpg">' . "\n";
+			}
 		}
+	} else {
+		preg_match('/(src)=("[^"]*")/i', str_replace("'", "\"", get_avatar($posts[0]->author)), $matches);
+		echo '<meta property="og:image" content=' . $matches[2] . '>' . "\n";
 	}
 	
 	// og:url
@@ -110,8 +111,10 @@ function easy_og() {
 	// og:locale
 	echo '<meta property="og:locale" content="en_US">' . "\n";
 	
-	// fb:admins 
-	echo '<meta property="fb:admins" content="">' . "\n";
+	// fb:admins
+	if ( isset($fbadmins) ) {
+		echo '<meta property="fb:admins" content="">' . "\n";
+	}
 	
 	// newline for nicer output
 	echo "\n";
