@@ -15,7 +15,11 @@ Author URI: http://www.vanpattenmedia.com/
  *
  */
 
+// Path to this plugin
 define( 'EASY_OG_PATH', plugin_dir_path( __FILE__ ) );
+
+// Direct URL to this theme, in case something is messing around with it
+define( 'EASY_OG_THEME_URL', content_url() . '/themes/' . next(explode('/themes/', get_template_directory())) );
 
 
 /**
@@ -33,26 +37,49 @@ require_once( EASY_OG_PATH . 'options.php');
  *
  */
 
-// og:title
-function easy_og_title() {
+function easy_og() {
+
+	// og:title
 	if ( is_front_page() || is_home() ) {
 		echo '<meta property="og:title" content="' . get_bloginfo('name') . '">' . "\n";
 	} else {
 		echo '<meta property="og:title" content="' . wp_title('', false) . '">' . "\n";
 	}
-}
-
-// og:type
-function easy_og_type() {
+	
+	// og:type
 	if ( is_single() ) {
 		echo '<meta property="og:type" content="article">' . "\n";
 	} else {
 		echo '<meta property="og:type" content="website">' . "\n";
 	}
-}
-
-// og:image
-function easy_og_image() {
+	
+	// article:published_time
+	if ( is_single() ) {
+		global $posts;
+		
+		echo '<meta property="article:published_time" content="' . get_the_time('c') . '">' . "\n";
+	}
+	
+	// article:modified_time
+	if ( is_single() ) {
+		global $posts;
+	
+		echo '<meta property="article:modified_time" content="' . get_the_modified_time('c') . '">' . "\n";
+	}
+	
+	// article:author
+	if ( is_single() ) {
+		global $posts;
+		
+		echo '<meta property="article:author" content="' . get_author_posts_url($posts[0]->post_author) . '">' . "\n";
+	}
+	
+	// og:article:tag
+	if ( is_single() ) {
+	
+	}
+	
+	// og:image
 	if ( function_exists('get_post_thumbnail_id') ) {
 		$image_id = get_post_thumbnail_id();
 		$image_url = wp_get_attachment_image_src($image_id,'large', true);
@@ -61,23 +88,17 @@ function easy_og_image() {
 		if ( isset( $easy_og_image_default ) ) {
 			
 		} else {
-			echo '<meta property="og:image" content="' . home_url() . get_bloginfo('template_directory') . '/screenshot.jpg">' . "\n";
+			echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . '/img/screenshot.jpg">' . "\n";
 		}
 	}
-}
-
-// og:url
-function easy_og_url() {
+	
+	// og:url
 	echo '<meta property="og:url" content="' . get_permalink() .'">' . "\n";
-}
-
-// og:site_name
-function easy_og_site_name() {
+	
+	// og:site_name
 	echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '">' . "\n";
-}
-
-// og:description
-function easy_og_description() {
+	
+	// og:description
 	if ( !is_front_page() ) {
 		global $posts;
 		
@@ -85,16 +106,16 @@ function easy_og_description() {
 	} else { 
 		echo '<meta property="og:description" content="Long description of site.">' . "\n";
 	}
-}
-
-// og:locale
-function easy_og_locale() {
+	
+	// og:locale
 	echo '<meta property="og:locale" content="en_US">' . "\n";
-}
-
-// fb:admins 
-function easy_og_fb_admins() {
+	
+	// fb:admins 
 	echo '<meta property="fb:admins" content="">' . "\n";
+	
+	// newline for nicer output
+	echo "\n";
+
 }
 
 
@@ -104,14 +125,8 @@ function easy_og_fb_admins() {
  *
  */
 
-add_action('wp_head', 'easy_og_title');
-add_action('wp_head', 'easy_og_type');
-add_action('wp_head', 'easy_og_image');
-add_action('wp_head', 'easy_og_url');
-add_action('wp_head', 'easy_og_site_name');
-add_action('wp_head', 'easy_og_description');
-add_action('wp_head', 'easy_og_locale');
-add_action('wp_head', 'easy_og_fb_admins');
+add_action('wp_head', 'easy_og');
+
 
 /**
  *
