@@ -1,3 +1,7 @@
 #icon-opengraph {
 	background: url(../img/opengraph.png) center center no-repeat;
 }
+
+.postbox .hndle {
+	cursor: pointer;
+}
