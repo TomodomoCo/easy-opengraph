@@ -19,7 +19,7 @@ Author URI: http://www.vanpattenmedia.com/
 define( 'EASY_OG_PATH', plugin_dir_path( __FILE__ ) );
 
 // Direct URL to this theme, in case something is messing around with it
-define( 'EASY_OG_THEME_URL', content_url() . '/themes/' . next(explode('/themes/', get_template_directory())) );
+define( 'EASY_OG_THEME_URL', trailingslashit(content_url()) . trailingslashit('themes') . trailingslashit(get_template()) );
 
 
 /**
@@ -70,6 +70,22 @@ function easy_og() {
 			
 	} elseif ( is_author() ) {
 		echo '<meta property="og:type" content="profile">' . "\n";
+		
+		global $posts;
+		
+		// profile:first_name
+		if ( get_the_author_meta('user_firstname', $posts[0]->post_author) ) {
+			echo '<meta property="profile:first_name" content="' . get_the_author_meta('user_firstname', $posts[0]->post_author) . '">' . "\n";
+		}
+		
+		// profile:last_name
+		if ( get_the_author_meta('user_lastname', $posts[0]->post_author) ) {
+			echo '<meta property="profile:last_name" content="' . get_the_author_meta('user_lastname', $posts[0]->post_author) . '">' . "\n";
+		}
+		
+		// profile:username
+		echo '<meta property="profile:username" content="' . get_the_author_meta('user_login', $posts[0]->post_author) . '">' . "\n";
+		
 	} else {
 		echo '<meta property="og:type" content="website">' . "\n";
 	}
@@ -83,9 +99,9 @@ function easy_og() {
 		} else {
 			if ( isset( $easy_og_image_default ) ) {
 				$image_url = wp_get_attachment_image_src($easy_og_image_id,'large', true);
-				echo '<meta property="og:image" content="' . home_url() . $image_url[0] . '">' . "\n";
+				echo '<meta property="og:image" content="' . $image_url[0] . '">' . "\n";
 			} else {
-				echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . '/img/screenshot.jpg">' . "\n";
+				echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . trailingslashit('img') . 'screenshot.jpg">' . "\n";
 			}
 		}
 	} else {
@@ -94,18 +110,50 @@ function easy_og() {
 	}
 	
 	// og:url
-	echo '<meta property="og:url" content="' . get_permalink() .'">' . "\n";
+	if ( is_single() || is_page() ) {
+		
+		echo '<meta property="og:url" content="' . get_permalink() .'">' . "\n";
+		
+	} elseif ( is_author() ) {
+		
+		global $posts;
+		
+		echo '<meta property="og:url" content="' . get_author_posts_url($posts[0]->post_author) .'">' . "\n";
+		
+	} elseif ( is_front_page() || is_home() ) {
+		
+		echo '<meta property="og:url" content="' . site_url() .'">' . "\n";
+		
+	} else {
+		
+		echo '<meta property="og:url" content="' . esc_url( $_SERVER['REQUEST_URI'] ) .'">' . "\n";
+		
+	}
 	
 	// og:site_name
 	echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '">' . "\n";
 	
 	// og:description
-	if ( !is_front_page() ) {
+	if ( is_single() ) {
+		
 		global $posts;
 		
 		echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
-	} else { 
+		
+	} elseif ( is_author() ) {
+		
+		echo '<meta property="og:description" content="' . wp_trim_words(get_the_author_meta('description', $posts[0]->post_author), 20) . '">' . "\n";
+	
+	} elseif ( is_archive() && !is_author() ) {
+	
+		global $posts;
+		
+		echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
+	
+	} else {
+		
 		echo '<meta property="og:description" content="Long description of site.">' . "\n";
+		
 	}
 	
 	// og:locale
