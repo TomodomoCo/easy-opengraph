@@ -41,7 +41,7 @@ function easy_og_settings() {
 	}
 	
 	// Preview
-	add_meta_box('preview', 'Preview', 'content', 'easy_og', 'side', 'core');
+	add_meta_box('preview', 'Preview', 'content_two', 'easy_og', 'side', 'core');
 	
 	// Title
 	add_meta_box('easy_og-title', '<input type="checkbox" checked disabled> Title', 'content', 'easy_og', 'normal', 'core');
@@ -95,5 +95,35 @@ function easy_og_settings() {
 }
 
 function content() {
-	echo 'Test';
+	echo '<ul class="wp-tab-bar">
+			<li class="wp-tab-active"><a href="#tabs-1">Tab 1</a></li>
+			<li><a href="#tabs-2">Tab 2</a></li>
+			<li><a href="#tabs-3">Tab 3</a></li>
+		</ul>
+		<div class="wp-tab-panel" id="tabs-1">
+			<p>Tab 1 content</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
+			<p>Tab 2 content</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
+			<p>Tab 3 content</p>
+		</div>';
+}
+
+function content_two() {
+	echo '<ul class="wp-tab-bar">
+			<li class="wp-tab-active"><a href="#tabs-1">Tab 1</a></li>
+			<li><a href="#tabs-2">Tab 2</a></li>
+			<li><a href="#tabs-3">Tab 3</a></li>
+		</ul>
+		<div class="wp-tab-panel" id="tabs-1">
+			<p>Tab 1 content</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
+			<p>Tab 2 content</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
+			<p>Tab 3 content</p>
+		</div>';
 }

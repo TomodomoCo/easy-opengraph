@@ -5,3 +5,7 @@
 .postbox .hndle {
 	cursor: pointer;
 }
+
+#post-body-content .tabs {
+	border-top-right-radius: 0px;
+}

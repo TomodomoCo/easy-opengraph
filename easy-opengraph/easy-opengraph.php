@@ -61,6 +61,7 @@ function easy_og() {
 		// article:author
 		echo '<meta property="article:author" content="' . get_author_posts_url($posts[0]->post_author) . '">' . "\n";
 		
+		// article:tag
 		$posttags = get_the_tags($posts->ID);
 		if ($posttags) {
 			foreach($posttags as $tag) {
@@ -177,12 +178,3 @@ function easy_og() {
  */
 
 add_action('wp_head', 'easy_og');
-
-
-/**
- *
- * Plugin Updater
- *
- */
- 
-require_once( EASY_OG_PATH . 'updater.php');

@@ -9,9 +9,23 @@ jQuery(document).ready( function($) {
 		disabled: true
 	});
 	
-	/* $('.meta-box-sortables').removeClass('ui-sortable').removeClass('meta-box-sortables');
-	
-	$('#side-sortables').removeAttr('id');
-	
-	$('#main-sortables').removeAttr('id'); */
+	// Tabs
+	$('.wp-tab-bar a').click(function(event){
+		event.preventDefault();
+		
+		// Limit effect to the container element.
+		var context = $(this).closest('.wp-tab-bar').parent();
+		$('.wp-tab-bar li', context).removeClass('wp-tab-active');
+		$(this).closest('li').addClass('wp-tab-active');
+		$('.wp-tab-panel', context).hide();
+		$( $(this).attr('href'), context ).show();
+	});
+
+	// Make setting wp-tab-active optional.
+	$('.wp-tab-bar').each(function(){
+		if ( $('.wp-tab-active', this).length )
+			$('.wp-tab-active', this).click();
+		else
+			$('a', this).first().click();
+	});
 });
