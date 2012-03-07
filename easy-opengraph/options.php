@@ -1,27 +1,45 @@
 <?php
 
+
+/**
+ *
+ * Register and load
+ *
+ */
+
 function easy_og_load_ext($hook) {
 	if ( $hook == 'settings_page_easy_og' ) {
-		wp_register_style('easy_og_style', plugins_url('css/style.css', __FILE__));
-		wp_enqueue_style('easy_og_style');
-		
+		// Register scripts
 		wp_register_script('easy_og_waypoints', 'http://cdnjs.cloudflare.com/ajax/libs/waypoints/1.1/waypoints.min.js');
 		wp_register_script('easy_og_waypoints_ssl', 'https://cdnjs.cloudflare.com/ajax/libs/waypoints/1.1/waypoints.min.js');
+		wp_register_script('easy_og_js', plugins_url('js/script.js', __FILE__));
+		
+		// Register style
+		wp_register_style('easy_og_style', plugins_url('css/style.css', __FILE__));
+		
+		// Enqueue scripts
 		if (is_ssl()) {
 			wp_enqueue_script('easy_og_waypoints_ssl');
 		} else {
 			wp_enqueue_script('easy_og_waypoints');
 		}
-		
 		wp_enqueue_script('common');
 		wp_enqueue_script('wp-lists');
 		wp_enqueue_script('postbox');
-		
-		wp_register_script('easy_og_js', plugins_url('js/script.js', __FILE__));
 		wp_enqueue_script('easy_og_js');
+		
+		// Enqueue style
+		wp_enqueue_style('easy_og_style');
 	}
 }
 add_action('admin_enqueue_scripts', 'easy_og_load_ext');
+
+
+/**
+ *
+ * Don't save metabox re-ordering
+ *
+ */
 
 function easy_og_disable_metabox_ordering($action) {
     if ( 'meta-box-order' == $action ) {
@@ -30,15 +48,36 @@ function easy_og_disable_metabox_ordering($action) {
 }
 add_action('check_ajax_referer', 'easy_og_disable_metabox_ordering');
 
+
+/**
+ *
+ * Set up the menu item
+ *
+ */
+
 function easy_og_menu() {
-	add_options_page('Easy OpenGraph Settings', 'Easy OpenGraph', 'manage_options', 'easy_og', 'easy_og_settings');
+	add_options_page('Easy OpenGraph Settings', 'OpenGraph', 'manage_options', 'easy_og', 'easy_og_settings');
 }
 add_action('admin_menu', 'easy_og_menu');
+
+
+/**
+ *
+ * Set up the settings page
+ *
+ */
 
 function easy_og_settings() {	
 	if (!current_user_can('manage_options'))  {
 		wp_die( __('You do not have sufficient permissions to access this page.') );
 	}
+	
+	
+	/**
+	 *
+	 * Set up the metaboxes
+	 *
+	 */
 	
 	// Preview
 	add_meta_box('preview', 'Preview', 'content_two', 'easy_og', 'side', 'core');
@@ -93,6 +132,13 @@ function easy_og_settings() {
 	</div>
 	<?php
 }
+
+
+/**
+ *
+ * Set up metabox content
+ *
+ */
 
 function content() {
 	echo '<ul class="wp-tab-bar">
