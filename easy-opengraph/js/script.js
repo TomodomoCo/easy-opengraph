@@ -9,6 +9,28 @@ jQuery(document).ready( function($) {
 		disabled: true
 	});
 	
+	$('h3.hndle').after('<div class="blocker"></div>');
+	
+	$('h3.hndle span input:checkbox').click( function(event) {
+		
+		$(this).parents('.postbox').each( function() {
+			var checked = $(this).find('h3.hndle span input:checked').length;
+			
+			if (checked == 1) {
+				$(this).find('.blocker').removeClass('click-block');
+				
+				$(this).removeClass('easy-og-closed');
+				$(this).fadeTo(0, 1);
+			} else {
+				$(this).find('.blocker').addClass('click-block');
+				
+				$(this).addClass('easy-og-closed');
+				$(this).fadeTo(0, 0.7);
+			}
+		});
+		
+	});
+	
 	// Tabs
 	$('.wp-tab-bar a').click(function(event){
 		event.preventDefault();

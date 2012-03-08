@@ -4,7 +4,7 @@ Plugin Name: VPM Easy OpenGraph
 Plugin URI: http://www.vanpattenmedia.com/
 Description: "Set it and forget it" Facebook OpenGraph
 Author: Van Patten Media
-Version: 0.5
+Version: 0.6
 Author URI: http://www.vanpattenmedia.com/
 */
 
@@ -24,6 +24,57 @@ define( 'EASY_OG_THEME_URL', trailingslashit(content_url()) . trailingslashit('t
 
 /**
  *
+ * Plugin activation/deactivation
+ *
+ */
+
+// Set default options on activation
+function easy_og_defaults() {
+	$locale_default = get_locale();
+	if ( !isset($locale_default) ) {
+		$locale_default = 'en_US';
+	}
+	
+	$arr = array(
+		// type:article
+		"article-status"         => "on",
+		    "article-pubdate"    => "on",
+		    "article-moddate"    => "on",
+		    "article-tag"        => "on",
+		    "article-cattag"     => "Tags",
+		
+		// type:profile
+		"profile-status"         => "on",
+		    "profile-realnames"  => "on",
+		    "profile-usernames"  => "on",
+		
+		// og:site_name
+		"site_name-status"       => "on",
+		
+		// og:description
+		"description-status"     => "on",
+		
+		// og:locale
+		"locale-status"          => "on",
+		    "locale-setting"     => "en_US",
+		
+		// FB Properties
+		"fbprops-status"         => "",
+		    "fbprops-admins"     => ""
+	);
+	update_option('easy_og_options', $arr);
+}
+register_activation_hook(__FILE__, 'easy_og_defaults');
+
+// Delete options on deactivation
+function easy_og_delete_options() {
+	delete_option('easy_og_options');
+}
+register_uninstall_hook(__FILE__, 'easy_og_delete_options');
+
+
+/**
+ *
  * Options
  *
  */
@@ -38,6 +89,8 @@ require_once( EASY_OG_PATH . 'options.php');
  */
 
 function easy_og() {
+	// Get options
+	$options = get_option('easy_og_options');
 
 	// og:title
 	if ( is_front_page() || is_home() ) {
@@ -53,23 +106,31 @@ function easy_og() {
 		global $posts;
 		
 		// article:published_time
-		echo '<meta property="article:published_time" content="' . get_the_time('c') . '">' . "\n";
+		if ($options['article-pubdate'] == 'on') {
+			echo '<meta property="article:published_time" content="' . get_the_time('c') . '">' . "\n";
+		}
 		
 		// article:modified_time
-		echo '<meta property="article:modified_time" content="' . get_the_modified_time('c') . '">' . "\n";
+		if ($options['article-moddate'] == 'on') {
+			echo '<meta property="article:modified_time" content="' . get_the_modified_time('c') . '">' . "\n";
+		}
 		
 		// article:author
-		echo '<meta property="article:author" content="' . get_author_posts_url($posts[0]->post_author) . '">' . "\n";
+		if ($options['profile-status'] == 'on') {
+			echo '<meta property="article:author" content="' . get_author_posts_url($posts[0]->post_author) . '">' . "\n";
+		}
 		
 		// article:tag
-		$posttags = get_the_tags($posts->ID);
-		if ($posttags) {
-			foreach($posttags as $tag) {
-				echo '<meta property="article:tag" content="' . $tag->name . '">' . "\n";
+		if ($options['article-tag'] == 'on') {
+			$posttags = get_the_tags($posts->ID);
+			if ($posttags) {
+				foreach($posttags as $tag) {
+					echo '<meta property="article:tag" content="' . $tag->name . '">' . "\n";
+				}
 			}
 		}
 			
-	} elseif ( is_author() ) {
+	} elseif ( is_author() && ($options['profile-status'] == 'on') ) {
 		echo '<meta property="og:type" content="profile">' . "\n";
 		
 		global $posts;
@@ -132,37 +193,33 @@ function easy_og() {
 	}
 	
 	// og:site_name
-	echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '">' . "\n";
+	if ( $options['site_name-status'] == 'on' ) {
+		echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '">' . "\n";
+	}
 	
 	// og:description
-	if ( is_single() ) {
-		
-		global $posts;
-		
-		echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
-		
-	} elseif ( is_author() ) {
-		
-		echo '<meta property="og:description" content="' . wp_trim_words(get_the_author_meta('description', $posts[0]->post_author), 20) . '">' . "\n";
-	
-	} elseif ( is_archive() && !is_author() ) {
-	
-		global $posts;
-		
-		echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
-	
-	} else {
-		
-		echo '<meta property="og:description" content="Long description of site.">' . "\n";
-		
+	if ( $options['description-status'] == 'on' ) {
+		if ( is_single() ) {
+			global $posts;
+			echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
+		} elseif ( is_author() ) {
+			echo '<meta property="og:description" content="' . wp_trim_words(get_the_author_meta('description', $posts[0]->post_author), 20) . '">' . "\n";
+		} elseif ( is_archive() && !is_author() ) {
+			global $posts;
+			echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
+		} else {
+			echo '<meta property="og:description" content="Long description of site.">' . "\n";
+		}
 	}
 	
 	// og:locale
-	echo '<meta property="og:locale" content="en_US">' . "\n";
+	if ( $options['locale-status'] == 'on' ) {
+		echo '<meta property="og:locale" content="' . $options['locale-setting'] . '">' . "\n";
+	}
 	
 	// fb:admins
-	if ( isset($fbadmins) ) {
-		echo '<meta property="fb:admins" content="">' . "\n";
+	if ( $options['fbprops-status'] == 'on' ) {
+		echo '<meta property="fb:admins" content="' . $options['fbprops-admins'] . '">' . "\n";
 	}
 	
 	// newline for nicer output

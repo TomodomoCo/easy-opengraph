@@ -3,7 +3,7 @@
 
 /**
  *
- * Register and load
+ * Register and load scripts and styles
  *
  */
 
@@ -28,25 +28,15 @@ function easy_og_load_ext($hook) {
 		wp_enqueue_script('postbox');
 		wp_enqueue_script('easy_og_js');
 		
+		wp_enqueue_script('media-upload');
+		wp_enqueue_script('thickbox');
+		
 		// Enqueue style
 		wp_enqueue_style('easy_og_style');
+		wp_enqueue_style('thickbox');
 	}
 }
 add_action('admin_enqueue_scripts', 'easy_og_load_ext');
-
-
-/**
- *
- * Don't save metabox re-ordering
- *
- */
-
-function easy_og_disable_metabox_ordering($action) {
-    if ( 'meta-box-order' == $action ) {
-    	die;
-    }
-}
-add_action('check_ajax_referer', 'easy_og_disable_metabox_ordering');
 
 
 /**
@@ -63,14 +53,38 @@ add_action('admin_menu', 'easy_og_menu');
 
 /**
  *
+ * Validate/sanitize and register the settings
+ *
+ */
+
+// Validate
+function easy_og_validate($input) {
+	$input['set_locale'] = strip_tags($input['set_locale']);
+	return $input;
+}
+
+// Register
+function easy_og_register() {
+	register_setting('easy_og_plugin_options', 'easy_og_options', 'easy_og_validate');
+}
+add_action('admin_init', 'easy_og_register' );
+
+
+/**
+ *
  * Set up the settings page
  *
  */
 
 function easy_og_settings() {	
+	
+	// Test permissions
 	if (!current_user_can('manage_options'))  {
 		wp_die( __('You do not have sufficient permissions to access this page.') );
 	}
+	
+	// Get options
+	$options = get_option('easy_og_options');
 	
 	
 	/**
@@ -80,31 +94,31 @@ function easy_og_settings() {
 	 */
 	
 	// Preview
-	add_meta_box('preview', 'Preview', 'content_two', 'easy_og', 'side', 'core');
+	add_meta_box('preview', 'Preview', 'easy_og_preview', 'easy_og', 'side', 'core');
 	
 	// Title
-	add_meta_box('easy_og-title', '<input type="checkbox" checked disabled> Title', 'content', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-title', '<input type="checkbox" checked disabled> Title', 'easy_og_title', 'easy_og', 'normal', 'core');
 	
 	// Type
-	add_meta_box('easy_og-type', '<input type="checkbox" checked disabled> Type', 'content', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-type', '<input type="checkbox" checked disabled> Type', 'easy_og_type', 'easy_og', 'normal', 'core');
 	
 	// Image
-	add_meta_box('easy_og-image', '<input type="checkbox" checked disabled> Image', 'content', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-image', '<input type="checkbox" checked disabled> Image', 'easy_og_image', 'easy_og', 'normal', 'core');
 	
 	// URL
-	add_meta_box('easy_og-url', '<input type="checkbox" checked disabled> URL', 'content', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-url', '<input type="checkbox" checked disabled> URL', 'easy_og_url', 'easy_og', 'normal', 'core');
 	
 	// Site Name
-	add_meta_box('easy_og-site_name', '<input type="checkbox" checked> Site Name', 'content', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-site_name', '<input name="easy_og_options[site_name-status]" type="checkbox" ' . checked( $options['site_name-status'], 'on', false ) . '> Site Name', 'easy_og_site_name', 'easy_og', 'normal', 'core');
 	
 	// Description
-	add_meta_box('easy_og-description', '<input type="checkbox" checked> Description', 'content', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-description', '<input name="easy_og_options[description-status]" type="checkbox" ' . checked( $options['description-status'], 'on', false ) . '> Description', 'easy_og_description', 'easy_og', 'normal', 'core');
 	
 	// Locale
-	add_meta_box('easy_og-locale', '<input type="checkbox" checked> Locale', 'content', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-locale', '<input name="easy_og_options[locale-status]" type="checkbox" ' . checked( $options['locale-status'], 'on', false ) . '> Locale', 'easy_og_locale', 'easy_og', 'normal', 'core');
 	
 	// Facebook-specific Properties
-	add_meta_box('easy_og-fbprops', '<input type="checkbox" checked> Facebook-specific Properties', 'content', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-fbprops', '<input name="easy_og_options[fbprobs-status]" type="checkbox" ' . checked( $options['fbprobs-status'], 'on', false ) . '> Facebook-specific Properties', 'easy_og_fbprops', 'easy_og', 'normal', 'core');
 	
 	?>
 	<div class="wrap">
@@ -112,8 +126,13 @@ function easy_og_settings() {
 		<h2>Easy OpenGraph Settings</h2>
 		<p><strong>Easy OpenGraph</strong> is ready to work out of the box, but we've provided some settings below so you can personalize the output.</p>
 		<form method="post" action="options.php">
-			<?php wp_nonce_field('easy_og-metaboxes'); ?>
-			<?php wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false ); ?>
+			<?php
+			
+			// Add nonces and hidden fields
+			settings_fields('easy_og_plugin_options');
+			wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
+			
+			?>
 			<div class="metabox-holder has-right-sidebar">
 				<div class="inner-sidebar">
 					<?php do_meta_boxes('easy_og', 'side', $data); ?>
@@ -123,7 +142,7 @@ function easy_og_settings() {
 						<?php do_meta_boxes('easy_og', 'normal', $data); ?>
 						
 						<p class="submit">
-							<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes'); ?>" />
+							<input type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes'); ?>" />
 						</p>
 					</div>
 				</div>
@@ -140,7 +159,129 @@ function easy_og_settings() {
  *
  */
 
-function content() {
+// Preview
+function easy_og_preview() {
+	echo '<div id="code-preview">
+		<pre>' .
+			esc_html('<meta property="og:title" content="WordPress 3.3 test">
+<meta property="og:type" content="website">
+<meta property="og:image" content="http://clients.vanpattenmedia.com/wptest/wp-content/themes/themename/img/screenshot.jpg">
+<meta property="og:url" content="http://clients.vanpattenmedia.com/wptest">
+<meta property="og:site_name" content="WordPress 3.3 test">
+<meta property="og:description" content="Long description of site.">
+<meta property="og:locale" content="en_US">') . '</pre>
+	</div>';
+}
+
+// og:title
+function easy_og_title() {
+	echo '<p>There are no adjustable settings for the <strong>Title</strong> property.</p>';
+}
+
+// og:type
+function easy_og_type() {
+	// Get options
+	$options = get_option('easy_og_options');
+	
+	echo '<ul class="wp-tab-bar">
+			<li class="wp-tab-active"><a href="#tabs-1">type:website</a></li>
+			<li><a href="#tabs-2">type:article</a></li>
+			<li><a href="#tabs-3">type:profile</a></li>
+		</ul>
+		<div class="wp-tab-panel" id="tabs-1">
+			<p>The <strong>website</strong> type is used on the front page and most archive pages.</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
+			<p><input type="checkbox" name="easy_og_options[article-pubdate]" ' . checked( $options['article-pubdate'], 'on', false ) . '> Include article published dates</p>
+			<p><input type="checkbox" name="easy_og_options[article-moddate]" ' . checked( $options['article-moddate'], 'on', false ) . '> Include article modified dates</p>
+			<p><input type="checkbox" name="easy_og_options[article-tag]" ' . checked( $options['article-tag'], 'on', false ) . '> Include article tags</p>
+			<p>Where should we get the data for OpenGraph article tags? <strong>' . $options['article-cattag'] . '</strong></p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
+			<p>The <strong>profile</strong> type is used on author archive pages.</p>
+			<p><input type="checkbox" name="easy_og_options[profile-status]" ' . checked( $options['profile-status'], 'on', false ) . '> Enable the <strong>profile</strong> type</p>
+			<p><input type="checkbox" name="easy_og_options[profile-realnames]" ' . checked( $options['profile-realnames'], 'on', false ) . '> Include first and last names (if available)</p>
+			<p><input type="checkbox" name="easy_og_options[profile-usernames]" ' . checked( $options['profile-usernames'], 'on', false ) . '> Include usernames</p>
+		</div>';
+}
+
+// og:image
+function easy_og_image() {
+	// Get options
+	$options = get_option('easy_og_options');
+	
+	echo '<ul class="wp-tab-bar">
+			<li class="wp-tab-active"><a href="#tabs-1">Default</a></li>
+			<li><a href="#tabs-2">type:article</a></li>
+			<li><a href="#tabs-3">type:profile</a></li>
+		</ul>
+		<div class="wp-tab-panel" id="tabs-1">
+			<p>Upload a default image below. <strong><i>(Recommended)</i></strong></p>
+			
+			<p><strong>Note:</strong> If no default is set, we will use your active theme&rsquo;s sample screenshot.</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
+			<p><input type="checkbox"> Use a post or page&rsquo;s featured image (if available) <strong><i>(Recommended)</i></strong></p>
+			<p><input type="checkbox"> Provide additional image options by scanning a post or page for embedded images</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
+			<p><input type="checkbox"> Use a user&rsquo;s <a href="http://www.gravatar.com">Gravatar</a> on profile pages. <strong><i>(Recommended)</i></strong></p>
+		</div>';
+}
+
+// og:url
+function easy_og_url() {
+	echo '<p>There are no adjustable settings for the <strong>URL</strong> property.</p>';
+}
+
+// og:site_name
+function easy_og_site_name() {
+	echo '<p>There are no adjustable settings for the <strong>site name</strong> property.</p>';
+}
+
+// og:description
+function easy_og_description() {
+	// Get options
+	$options = get_option('easy_og_options');
+	
+	echo '<ul class="wp-tab-bar">
+			<li class="wp-tab-active"><a href="#tabs-1">Default</a></li>
+			<li><a href="#tabs-2">type:article</a></li>
+			<li><a href="#tabs-3">type:profile</a></li>
+		</ul>
+		<div class="wp-tab-panel" id="tabs-1">
+			<p>Tab 1 content</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
+			<p>Tab 2 content</p>
+		</div>
+		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
+			<p>Tab 3 content</p>
+		</div>';
+}
+
+// og:locale
+function easy_og_locale() {
+	// Get options
+	$options = get_option('easy_og_options');
+	
+	// See if we can get the locale automatically, and display a message as a result.
+	$auto_locale = get_locale();
+	if ( isset($auto_locale) ) {
+		echo '<p>We&rsquo;ve auto-detected your site&rsquo;s locale, but you can override it below.</p>';
+	} else {
+		echo '<p>We couldn&rsquo;t detect a locale. You can set it manually below.</p>';
+	}
+	
+	// Display the form and populate it with the set locale
+	echo '<input type="text" name="easy_og_options[locale-setting]" value="' . $options['locale-setting'] . '">';
+}
+
+// FB properties
+function easy_og_fbprops() {
+	// Get options
+	$options = get_option('easy_og_options');
+	
 	echo '<ul class="wp-tab-bar">
 			<li class="wp-tab-active"><a href="#tabs-1">Tab 1</a></li>
 			<li><a href="#tabs-2">Tab 2</a></li>
@@ -157,19 +298,16 @@ function content() {
 		</div>';
 }
 
-function content_two() {
-	echo '<ul class="wp-tab-bar">
-			<li class="wp-tab-active"><a href="#tabs-1">Tab 1</a></li>
-			<li><a href="#tabs-2">Tab 2</a></li>
-			<li><a href="#tabs-3">Tab 3</a></li>
-		</ul>
-		<div class="wp-tab-panel" id="tabs-1">
-			<p>Tab 1 content</p>
-		</div>
-		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p>Tab 2 content</p>
-		</div>
-		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
-			<p>Tab 3 content</p>
-		</div>';
+
+/**
+ *
+ * Don't save metabox re-ordering
+ *
+ */
+
+function easy_og_disable_metabox_ordering($action) {
+    if ( 'meta-box-order' == $action ) {
+    	die;
+    }
 }
+add_action('check_ajax_referer', 'easy_og_disable_metabox_ordering');
