@@ -222,11 +222,11 @@ function easy_og_image() {
 			<p><strong>Note:</strong> If no default is set, we will use your active theme&rsquo;s sample screenshot.</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p><input type="checkbox" name="easy_og_options[image-featured]" ' . checked( $options['image-featured'], 'on', false ) . '> Use a post or page&rsquo;s featured image (if available) <strong><i>(Recommended)</i></strong></p>
+			<p><input type="checkbox" name="easy_og_options[image-featured]" ' . checked( $options['image-featured'], 'on', false ) . '> Use a post or page&rsquo;s featured image, if available <strong><i>(Recommended)</i></strong></p>
 			<p><input type="checkbox"> Provide additional image options by scanning a post or page for embedded images</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
-			<p><input type="checkbox" name="easy_og_options[image-gravatar]" ' . checked( $options['image-gravatar'], 'on', false ) . '> Use a user&rsquo;s <a href="http://www.gravatar.com">Gravatar</a> on profile pages. <strong><i>(Recommended)</i></strong></p>
+			<p><input type="checkbox" name="easy_og_options[image-gravatar]" ' . checked( $options['image-gravatar'], 'on', false ) . '> Use a user&rsquo;s <a href="http://www.gravatar.com">Gravatar</a> on profile pages <strong><i>(Recommended)</i></strong></p>
 		</div>';
 }
 
@@ -255,10 +255,10 @@ function easy_og_description() {
 			<p><textarea class="widefat" name="easy_og_options[description-long]">' . $options['description-long'] . '</textarea></p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p>Tab 2 content</p>
+			<p><input type="checkbox" name="easy_og_options[description-article]" ' . checked( $options['description-article'], 'on', false ) . '> Set the article description from the post excerpt, if it exists (we&rsquo;ll generate one from your content if you don&rsquo;t set one manually)</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
-			<p>Tab 3 content</p>
+			<p><input type="checkbox" name="easy_og_options[description-profile]" ' . checked( $options['description-article'], 'on', false ) . '> Set the profile description from the author&rsquo;s biography, if it exists</p>
 		</div>';
 }
 

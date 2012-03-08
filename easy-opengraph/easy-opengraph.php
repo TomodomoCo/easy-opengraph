@@ -42,36 +42,38 @@ function easy_og_defaults() {
 	
 	$arr = array(
 		// type:article
-		"article-status"         => "on",
-		    "article-pubdate"    => "on",
-		    "article-moddate"    => "on",
-		    "article-tag"        => "on",
-		    "article-cattag"     => "Tags",
+		"article-status"          => "on",
+		    "article-pubdate"     => "on",
+		    "article-moddate"     => "on",
+		    "article-tag"         => "on",
+		    "article-cattag"      => "Tags",
 		
 		// type:profile
-		"profile-status"         => "on",
-		    "profile-realnames"  => "on",
-		    "profile-usernames"  => "on",
+		"profile-status"          => "on",
+		    "profile-realnames"   => "on",
+		    "profile-usernames"   => "on",
 		
 		// image
-		"image-status"           => "on",
-		    "image-featured"     => "on",
-		    "image-gravatar"     => "on",
+		"image-status"            => "on",
+		    "image-featured"      => "on",
+		    "image-gravatar"      => "on",
 		
 		// og:site_name
-		"site_name-status"       => "on",
+		"site_name-status"        => "on",
 		
 		// og:description
-		"description-status"     => "on",
-		    "description-long"   => $description_default,
+		"description-status"      => "on",
+		    "description-long"    => $description_default,
+		    "description-article" => "on",
+		    "description-profile" => "on",
 		
 		// og:locale
-		"locale-status"          => "on",
-		    "locale-setting"     => $locale_default,
+		"locale-status"           => "on",
+		    "locale-setting"      => $locale_default,
 		
 		// FB Properties
-		"fbprops-status"         => "",
-		    "fbprops-admins"     => ""
+		"fbprops-status"          => "",
+		    "fbprops-admins"      => ""
 	);
 	update_option('easy_og_options', $arr);
 }
@@ -200,12 +202,14 @@ function easy_og() {
 	if ( $options['description-status'] == 'on' ) {
 		$author_bio = get_the_author_meta('description', $posts[0]->post_author);
 		
-		if ( is_single() ) {
+		if ( is_single() && ($options['description-article'] == 'on') && empty($posts[0]->post_excerpt) ) {
 			echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
-		} elseif ( is_author() && !empty($author_bio) ) {
+		} elseif ( is_single() && ($options['description-article'] == 'on') && !empty($posts[0]->post_excerpt) ) {
+			echo '<meta property="og:description" content="' . $posts[0]->post_excerpt . '">' . "\n";
+		} elseif ( is_author() && !empty($author_bio) && ($options['description-profile'] == 'on') ) {
 			echo '<meta property="og:description" content="' . wp_trim_words(get_the_author_meta('description', $posts[0]->post_author), 20) . '">' . "\n";
 		} elseif ( is_archive() && !is_author() ) {
-			echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
+			echo '<meta property="og:description" content="' . $options['description-long'] . '">' . "\n";
 		} else {
 			echo '<meta property="og:description" content="' . $options['description-long'] . '">' . "\n";
 		}
