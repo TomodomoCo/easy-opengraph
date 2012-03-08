@@ -35,6 +35,11 @@ function easy_og_defaults() {
 		$locale_default = 'en_US';
 	}
 	
+	$description_default = get_bloginfo('description');
+	if ( empty($description_default) ) {
+		$description_default = 'Visit ' . get_bloginfo('name');
+	}
+	
 	$arr = array(
 		// type:article
 		"article-status"         => "on",
@@ -48,15 +53,21 @@ function easy_og_defaults() {
 		    "profile-realnames"  => "on",
 		    "profile-usernames"  => "on",
 		
+		// image
+		"image-status"           => "on",
+		    "image-featured"     => "on",
+		    "image-gravatar"     => "on",
+		
 		// og:site_name
 		"site_name-status"       => "on",
 		
 		// og:description
 		"description-status"     => "on",
+		    "description-long"   => $description_default,
 		
 		// og:locale
 		"locale-status"          => "on",
-		    "locale-setting"     => "en_US",
+		    "locale-setting"     => $locale_default,
 		
 		// FB Properties
 		"fbprops-status"         => "",
@@ -91,6 +102,8 @@ require_once( EASY_OG_PATH . 'options.php');
 function easy_og() {
 	// Get options
 	$options = get_option('easy_og_options');
+	
+	global $posts;
 
 	// og:title
 	if ( is_front_page() || is_home() ) {
@@ -102,8 +115,6 @@ function easy_og() {
 	// og:type
 	if ( is_single() ) {
 		echo '<meta property="og:type" content="article">' . "\n";
-		
-		global $posts;
 		
 		// article:published_time
 		if ($options['article-pubdate'] == 'on') {
@@ -133,8 +144,6 @@ function easy_og() {
 	} elseif ( is_author() && ($options['profile-status'] == 'on') ) {
 		echo '<meta property="og:type" content="profile">' . "\n";
 		
-		global $posts;
-		
 		// profile:first_name
 		if ( get_the_author_meta('user_firstname', $posts[0]->post_author) ) {
 			echo '<meta property="profile:first_name" content="' . get_the_author_meta('user_firstname', $posts[0]->post_author) . '">' . "\n";
@@ -153,8 +162,11 @@ function easy_og() {
 	}
 	
 	// og:image
-	if ( !is_author() ) {
-		if ( function_exists('get_post_thumbnail_id') && get_post_thumbnail_id() ) {
+	if ( is_author() && ($options['profile-status'] == 'on') && ($options['image-gravatar'] == 'on') ) {
+		preg_match('/(src)=("[^"]*")/i', str_replace("'", "\"", get_avatar($posts[0]->author)), $matches);
+		echo '<meta property="og:image" content=' . $matches[2] . '>' . "\n";
+	} else {
+		if ( function_exists('get_post_thumbnail_id') && get_post_thumbnail_id() && ($options['image-featured'] == 'on') ) {
 			$image_id = get_post_thumbnail_id();
 			$image_url = wp_get_attachment_image_src($image_id,'large', true);
 			echo '<meta property="og:image" content="' . home_url() . $image_url[0] . '">' . "\n";
@@ -166,30 +178,17 @@ function easy_og() {
 				echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . trailingslashit('img') . 'screenshot.jpg">' . "\n";
 			}
 		}
-	} else {
-		preg_match('/(src)=("[^"]*")/i', str_replace("'", "\"", get_avatar($posts[0]->author)), $matches);
-		echo '<meta property="og:image" content=' . $matches[2] . '>' . "\n";
 	}
 	
 	// og:url
 	if ( is_single() || is_page() ) {
-		
 		echo '<meta property="og:url" content="' . get_permalink() .'">' . "\n";
-		
 	} elseif ( is_author() ) {
-		
-		global $posts;
-		
 		echo '<meta property="og:url" content="' . get_author_posts_url($posts[0]->post_author) .'">' . "\n";
-		
 	} elseif ( is_front_page() || is_home() ) {
-		
 		echo '<meta property="og:url" content="' . site_url() .'">' . "\n";
-		
 	} else {
-		
 		echo '<meta property="og:url" content="' . esc_url( $_SERVER['REQUEST_URI'] ) .'">' . "\n";
-		
 	}
 	
 	// og:site_name
@@ -199,16 +198,16 @@ function easy_og() {
 	
 	// og:description
 	if ( $options['description-status'] == 'on' ) {
+		$author_bio = get_the_author_meta('description', $posts[0]->post_author);
+		
 		if ( is_single() ) {
-			global $posts;
 			echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
-		} elseif ( is_author() ) {
+		} elseif ( is_author() && !empty($author_bio) ) {
 			echo '<meta property="og:description" content="' . wp_trim_words(get_the_author_meta('description', $posts[0]->post_author), 20) . '">' . "\n";
 		} elseif ( is_archive() && !is_author() ) {
-			global $posts;
 			echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
 		} else {
-			echo '<meta property="og:description" content="Long description of site.">' . "\n";
+			echo '<meta property="og:description" content="' . $options['description-long'] . '">' . "\n";
 		}
 	}
 	

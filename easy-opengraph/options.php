@@ -59,7 +59,8 @@ add_action('admin_menu', 'easy_og_menu');
 
 // Validate
 function easy_og_validate($input) {
-	$input['set_locale'] = strip_tags($input['set_locale']);
+	$input['locale-setting'] = strip_tags($input['locale-setting']);
+	$input['description-long'] = strip_tags($input['description-long']);
 	return $input;
 }
 
@@ -175,7 +176,7 @@ function easy_og_preview() {
 
 // og:title
 function easy_og_title() {
-	echo '<p>There are no adjustable settings for the <strong>Title</strong> property.</p>';
+	echo '<p>There are no adjustable settings for the <strong>title</strong> property.</p>';
 }
 
 // og:type
@@ -221,11 +222,11 @@ function easy_og_image() {
 			<p><strong>Note:</strong> If no default is set, we will use your active theme&rsquo;s sample screenshot.</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p><input type="checkbox"> Use a post or page&rsquo;s featured image (if available) <strong><i>(Recommended)</i></strong></p>
+			<p><input type="checkbox" name="easy_og_options[image-featured]" ' . checked( $options['image-featured'], 'on', false ) . '> Use a post or page&rsquo;s featured image (if available) <strong><i>(Recommended)</i></strong></p>
 			<p><input type="checkbox"> Provide additional image options by scanning a post or page for embedded images</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
-			<p><input type="checkbox"> Use a user&rsquo;s <a href="http://www.gravatar.com">Gravatar</a> on profile pages. <strong><i>(Recommended)</i></strong></p>
+			<p><input type="checkbox" name="easy_og_options[image-gravatar]" ' . checked( $options['image-gravatar'], 'on', false ) . '> Use a user&rsquo;s <a href="http://www.gravatar.com">Gravatar</a> on profile pages. <strong><i>(Recommended)</i></strong></p>
 		</div>';
 }
 
@@ -236,7 +237,7 @@ function easy_og_url() {
 
 // og:site_name
 function easy_og_site_name() {
-	echo '<p>There are no adjustable settings for the <strong>site name</strong> property.</p>';
+	echo '<p>There are no adjustable settings for the <strong>site name</strong> property.</p><p>The <strong>site name</strong> is equivalent to your site title, which is set in your <a href="' . admin_url('options-general.php') . '">general settings</a>.</p>';
 }
 
 // og:description
@@ -250,7 +251,8 @@ function easy_og_description() {
 			<li><a href="#tabs-3">type:profile</a></li>
 		</ul>
 		<div class="wp-tab-panel" id="tabs-1">
-			<p>Tab 1 content</p>
+			<p>Set a long description for your site. We use your slogan by default, but it can be longer.</p>
+			<p><textarea class="widefat" name="easy_og_options[description-long]">' . $options['description-long'] . '</textarea></p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
 			<p>Tab 2 content</p>
