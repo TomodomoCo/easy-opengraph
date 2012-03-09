@@ -26,10 +26,9 @@ function easy_og_load_ext($hook) {
 		wp_enqueue_script('common');
 		wp_enqueue_script('wp-lists');
 		wp_enqueue_script('postbox');
-		wp_enqueue_script('easy_og_js');
-		
 		wp_enqueue_script('media-upload');
 		wp_enqueue_script('thickbox');
+		wp_enqueue_script('easy_og_js');
 		
 		// Enqueue style
 		wp_enqueue_style('easy_og_style');
@@ -218,12 +217,13 @@ function easy_og_image() {
 		</ul>
 		<div class="wp-tab-panel" id="tabs-1">
 			<p>Upload a default image below. <strong><i>(Recommended)</i></strong></p>
-			
+			<p><a href="javascript:;" class="button-secondary" id="upload-default-image">Upload image</a></p>
 			<p><strong>Note:</strong> If no default is set, we will use your active theme&rsquo;s sample screenshot.</p>
+			<p><input type="checkbox" name="easy_og_options[image-dimensions]" ' . checked( $options['image-dimensions'], 'on', false ) . '> Include image dimensions, if available</i></strong></p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
 			<p><input type="checkbox" name="easy_og_options[image-featured]" ' . checked( $options['image-featured'], 'on', false ) . '> Use a post or page&rsquo;s featured image, if available <strong><i>(Recommended)</i></strong></p>
-			<p><input type="checkbox"> Provide additional image options by scanning a post or page for embedded images</p>
+			<p><input type="checkbox" name="easy_og_options[image-scan]" ' . checked( $options['image-scan'], 'on', false ) . '> Provide additional image options by scanning a post or page for embedded images</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
 			<p><input type="checkbox" name="easy_og_options[image-gravatar]" ' . checked( $options['image-gravatar'], 'on', false ) . '> Use a user&rsquo;s <a href="http://www.gravatar.com">Gravatar</a> on profile pages <strong><i>(Recommended)</i></strong></p>

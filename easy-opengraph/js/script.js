@@ -66,4 +66,17 @@ jQuery(document).ready( function($) {
 		else
 			$('a', this).first().click();
 	});
+	
+	// Upload
+	$('#upload-default-image').click(function () {
+		tb_show('Upload default image', 'media-upload.php?type=image&TB_iframe=true&height=400&width=600');
+		// return false; // not sure if you actually need/want this. Try it out.
+	});
+	
+	window.send_to_editor = function(html) {
+		imgurl = jQuery('img',html).attr('src');
+		// imgurl now contains the source of the image, do with it what you want
+		alert(imgurl);
+		tb_remove();
+	}
 });
