@@ -21,6 +21,9 @@ define( 'EASY_OG_PATH', plugin_dir_path( __FILE__ ) );
 // Direct URL to this theme, in case something is messing around with it
 define( 'EASY_OG_THEME_URL', trailingslashit(content_url()) . trailingslashit('themes') . trailingslashit(get_template()) );
 
+// Direct path to current theme, in case something is messing around with it
+define( 'EASY_OG_THEME_PATH', trailingslashit(get_theme_root()) . trailingslashit(get_template()) );
+
 
 /**
  *
@@ -207,7 +210,7 @@ function easy_og() {
 		// Use featured image, if it's available and set
 		
 			$image_id = get_post_thumbnail_id();
-			$image_info = wp_get_attachment_image_src($image_id,'large', true);
+			$image_info = wp_get_attachment_image_src($image_id, 'medium');
 			
 			echo '<meta property="og:image" content="' . home_url() . $image_info[0] . '">' . "\n";
 			
@@ -223,7 +226,7 @@ function easy_og() {
 			if ( isset( $easy_og_image_default ) ) {
 			// If it's available, use the uploaded default image
 			
-				$image_info = wp_get_attachment_image_src($easy_og_image_id,'large', true);
+				$image_info = wp_get_attachment_image_src($easy_og_image_id, 'medium');
 				echo '<meta property="og:image" content="' . $image_info[0] . '">' . "\n";
 				
 				// Show dimensions
@@ -233,40 +236,62 @@ function easy_og() {
 				}
 				
 			} else {
-			// Otherwise, auto-detected a theme screenshot
+			// Otherwise, auto-detect a theme screenshot
 			
-				echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . trailingslashit('img') . 'screenshot.jpg">' . "\n";
+				// Get the theme directory as an array
+				$theme_dir = scandir(EASY_OG_THEME_PATH);
+				
+				// Mush the $theme_dir array into a string and search it for a screenshot
+				preg_match_all('/(screenshot.(?:jpg|gif|png|jpeg)),/', implode(',', $theme_dir), $screenshot);
+				
+				// If we find any, grab the first one and echo it out
+				if ( isset($screenshot[1][0]) && !empty($screenshot[1][0]) ) {
+					echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . $screenshot[1][0] . '">' . "\n";
+				}
 				
 			}
 		}
 		
-		// Scanner
+		// Scan for images in a post
 		if ( is_single() && ($options['image-scan'] == 'on') ) {
+		
 			// Run preg_match_all to grab all the images and save the results in $images
-			preg_match_all( '~<img [^>]* />~', $posts[0]->post_content, $images );
+			preg_match_all('~<img [^>]* />~', $posts[0]->post_content, $images);
 			
+			// Cycle through the images
 			foreach ( $images as $image_arr ) {
 				foreach ( $image_arr as $image ) {
+				
 					// Get the image ID
-					preg_match_all('/wp-image-([0-9]*)/', $image, $id_match);
+					preg_match_all('/wp-image-([0-9]*)/', $image, $image_id);
 					
-					// Get fallback src, just in case
-					preg_match_all('/(src)="([^"]*)"/i', $image, $src_match);
+					// If we can get the ID...
+					if ( isset($image_id[1][0]) && !empty($image_id[1][0]) ) {
+					// ...we'll use it, and do this the right way!
 					
-					// Force absolute URLs
-					$uploads = wp_upload_dir();
-					$parsed_base = parse_url($uploads['baseurl']);
-					
-					if ( isset($id_match[1][0]) && !empty($id_match[1][0]) ) {
-					// Let's use the image ID and do this the right way
+						// We want absolute URLs
+						$uploads = wp_upload_dir();
+						$parsed_base = parse_url($uploads['baseurl']);
 						
-						$image_info = wp_get_attachment_image_src( $id_match[1][0], 'medium' );
+						// Get the image info
+						$image_info = wp_get_attachment_image_src($image_id[1][0], 'medium');
+						
+						// Echo it out
 						echo '<meta property="og:image" content="' . $uploads['baseurl'] . str_replace($parsed_base[path], '', $image_info[0]) . '">' . "\n";
-						echo '<meta property="og:image:width" content="' . $image_info[1] . '">' . "\n";
-						echo '<meta property="og:image:height" content="' . $image_info[2] . '">' . "\n";
+						
+						// Show dimensions
+						if ( $options['image-dimensions'] == 'on' ) {
+							echo '<meta property="og:image:width" content="' . $image_info[1] . '">' . "\n";
+							echo '<meta property="og:image:height" content="' . $image_info[2] . '">' . "\n";
+						}
 						
 					} else {
 					// We couldn't get the ID. Let's do it the old fashioned way.
+						
+						// Get fallback src
+						preg_match_all('/(src)="([^"]*)"/i', $image, $src_match);
+						
+						// Echo it out
 						echo '<meta property="og:image" content="' . $src_match[2][0] . '">' . "\n";
 					}
 				}
