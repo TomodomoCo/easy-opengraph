@@ -205,19 +205,25 @@ function easy_og() {
 		
 	} else {
 	// Otherwise...
-	
+		
+		// Let's set up absolute URLs
+		$uploads = wp_upload_dir();
+		$parsed_base = parse_url($uploads['baseurl']);
+		
 		if ( function_exists('get_post_thumbnail_id') && get_post_thumbnail_id() && ($options['image-featured'] == 'on') ) {
 		// Use featured image, if it's available and set
-		
+			
+			// Get featured image ID and image info
 			$image_id = get_post_thumbnail_id();
 			$image_info = wp_get_attachment_image_src($image_id, 'medium');
 			
-			echo '<meta property="og:image" content="' . home_url() . $image_info[0] . '">' . "\n";
+			// Echo it out
+			echo '<meta property="og:image" content="' . $uploads['baseurl'] . str_replace($parsed_base[path], '', $image_info[0]) . '">' . "\n";
 			
 			// Show dimensions
 			if ( $options['image-dimensions'] == 'on' ) {
-				echo '<meta property="og:image:width" content=' . $image_info[1] . '>' . "\n";
-				echo '<meta property="og:image:height" content=' . $image_info[2] . '>' . "\n";
+				echo '<meta property="og:image:width" content="' . $image_info[1] . '">' . "\n";
+				echo '<meta property="og:image:height" content="' . $image_info[2] . '">' . "\n";
 			}
 			
 		} else {
@@ -225,9 +231,12 @@ function easy_og() {
 		
 			if ( isset( $easy_og_image_default ) ) {
 			// If it's available, use the uploaded default image
-			
+				
+				// Get the image info
 				$image_info = wp_get_attachment_image_src($easy_og_image_id, 'medium');
-				echo '<meta property="og:image" content="' . $image_info[0] . '">' . "\n";
+				
+				// Echo it out
+				echo '<meta property="og:image" content="' . $uploads['baseurl'] . str_replace($parsed_base[path], '', $image_info[0]) . '">' . "\n";
 				
 				// Show dimensions
 				if ( $options['image-dimensions'] == 'on' ) {
@@ -268,10 +277,6 @@ function easy_og() {
 					// If we can get the ID...
 					if ( isset($image_id[1][0]) && !empty($image_id[1][0]) ) {
 					// ...we'll use it, and do this the right way!
-					
-						// We want absolute URLs
-						$uploads = wp_upload_dir();
-						$parsed_base = parse_url($uploads['baseurl']);
 						
 						// Get the image info
 						$image_info = wp_get_attachment_image_src($image_id[1][0], 'medium');
@@ -293,6 +298,7 @@ function easy_og() {
 						
 						// Echo it out
 						echo '<meta property="og:image" content="' . $src_match[2][0] . '">' . "\n";
+						
 					}
 				}
 			}
@@ -338,7 +344,10 @@ function easy_og() {
 	if ( $options['description-status'] == 'on' ) {
 		$author_bio = get_the_author_meta('description', $posts[0]->post_author);
 		
-		if ( is_single() && ($options['description-article'] == 'on') && empty($posts[0]->post_excerpt) ) {
+		// Strip the content down to its bare essentials to make sure we can use it
+		$clean_content = trim(str_replace(' ', '', str_replace('&nbsp;', '', wp_trim_words(strip_shortcodes($posts[0]->post_content), 20))));
+		
+		if ( is_single() && ($options['description-article'] == 'on') && empty($posts[0]->post_excerpt) && !empty($clean_content) ) {
 			echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
 		} elseif ( is_single() && ($options['description-article'] == 'on') && !empty($posts[0]->post_excerpt) ) {
 			echo '<meta property="og:description" content="' . $posts[0]->post_excerpt . '">' . "\n";
@@ -365,12 +374,14 @@ function easy_og() {
 	
 	/**
 	 *
-	 * fb:admins
+	 * fb:properties
 	 *
 	 */
 	
 	if ( $options['fbprops-status'] == 'on' ) {
 		echo '<meta property="fb:admins" content="' . $options['fbprops-admins'] . '">' . "\n";
+		
+		echo '<meta property="fb:app_id" content="' . $options['fbprops-app_id'] . '">' . "\n";
 	}
 	
 	// newline for nicer output
