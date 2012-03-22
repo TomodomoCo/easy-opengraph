@@ -74,9 +74,13 @@ jQuery(document).ready( function($) {
 	});
 	
 	window.send_to_editor = function(html) {
-		imgurl = jQuery('img',html).attr('src');
-		// imgurl now contains the source of the image, do with it what you want
-		alert(imgurl);
+		// attempt to extract the image attachment ID
+		var classes = jQuery('img', html).attr('class').split(' ');
+		var attachmentID = parseInt( classes[classes.length - 1].substring(9, classes[classes.length - 1].length) );
+		
+		// Get the img src
+		var imgurl = jQuery('img',html).attr('src');
+		
 		tb_remove();
 	}
 });
