@@ -128,7 +128,7 @@ function easy_og_settings() {
 	add_meta_box('easy_og-locale', '<input name="easy_og_options[locale-status]" type="checkbox" ' . checked( $options['locale-status'], 'on', false ) . '> Locale', 'easy_og_locale', 'easy_og', 'normal', 'core');
 	
 	// Facebook-specific Properties
-	add_meta_box('easy_og-fbprops', '<input name="easy_og_options[fbprobs-status]" type="checkbox" ' . checked( $options['fbprobs-status'], 'on', false ) . '> Facebook-specific Properties', 'easy_og_fbprops', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-fbprops', '<input name="easy_og_options[fbprops-status]" type="checkbox" ' . checked( $options['fbprops-status'], 'on', false ) . '> Facebook-specific Properties', 'easy_og_fbprops', 'easy_og', 'normal', 'core');
 	
 	?>
 	<div class="wrap">
@@ -354,10 +354,10 @@ function easy_og_fbprops() {
 			<li><a href="#tabs-2">fb:app_id</a></li>
 		</ul>
 		<div class="wp-tab-panel" id="tabs-1">
-			<p>Tab 1 content</p>
+			<input type="text" name="easy_og_options[fbprops-admins]" value="' . $options['fbprops-admins'] . '">
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p>Tab 2 content</p>
+			<input type="text" name="easy_og_options[fbprops-app_id]" value="' . $options['fbprops-app_id'] . '">
 		</div>';
 }
 

@@ -79,7 +79,8 @@ function easy_og_defaults() {
 		
 		// FB Properties
 		"fbprops-status"          => "",
-		    "fbprops-admins"      => ""
+		    "fbprops-admins"      => "",
+		    "fbprops-app_id"      => ""
 	);
 	update_option('easy_og_options', $arr);
 }
@@ -380,9 +381,15 @@ function easy_og() {
 	 */
 	
 	if ( $options['fbprops-status'] == 'on' ) {
-		echo '<meta property="fb:admins" content="' . $options['fbprops-admins'] . '">' . "\n";
 		
-		echo '<meta property="fb:app_id" content="' . $options['fbprops-app_id'] . '">' . "\n";
+		if ( isset($options['fbprops-admins']) && !empty($options['fbprops-admins']) ) {
+			echo '<meta property="fb:admins" content="' . $options['fbprops-admins'] . '">' . "\n";
+		}
+		
+		if ( isset($options['fbprops-app_id']) && !empty($options['fbprops-app_id']) ) {
+			echo '<meta property="fb:app_id" content="' . $options['fbprops-app_id'] . '">' . "\n";
+		}
+		
 	}
 	
 	// newline for nicer output
