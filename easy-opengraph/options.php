@@ -104,7 +104,7 @@ function easy_og_settings() {
 	 */
 	
 	// Preview
-	add_meta_box('preview', 'Preview', 'easy_og_preview', 'easy_og', 'side', 'core');
+	add_meta_box('preview', 'Code Preview', 'easy_og_preview', 'easy_og', 'side', 'core');
 	
 	// Title
 	add_meta_box('easy_og-title', '<input type="checkbox" checked disabled> Title', 'easy_og_title', 'easy_og', 'normal', 'core');
@@ -171,16 +171,60 @@ function easy_og_settings() {
 
 // Preview
 function easy_og_preview() {
-	echo '<div id="code-preview">
-		<pre class="prettyprint"><code class="lang-html">' .
-			esc_html('<meta property="og:title" content="WordPress 3.3 test">
+	echo '<ul class="wp-tab-bar">
+			<li class="wp-tab-active"><a href="#tabs-1">type:website</a></li>
+			<li><a href="#tabs-2">type:article</a></li>
+			<li><a href="#tabs-3">type:profile</a></li>
+		</ul>
+		<div class="wp-tab-panel code-preview" id="tabs-1">
+			<pre class="prettyprint"><code class="lang-html">' .
+
+esc_html('<meta property="og:title" content="WordPress 3.3 test">
 <meta property="og:type" content="website">
 <meta property="og:image" content="http://clients.vanpattenmedia.com/wptest/wp-content/themes/themename/img/screenshot.jpg">
 <meta property="og:url" content="http://clients.vanpattenmedia.com/wptest">
 <meta property="og:site_name" content="WordPress 3.3 test">
 <meta property="og:description" content="Long description of site.">
-<meta property="og:locale" content="en_US">') . '</code></pre>
-	</div>';
+<meta property="og:locale" content="en_US">')
+			
+			 . '</code></pre>
+		</div>
+		<div class="wp-tab-panel code-preview" id="tabs-2" style="display: none;">
+			<pre class="prettyprint"><code class="lang-html">' .
+			
+esc_html('<meta property="og:title" content="Hello world!">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2011-10-29T14:59:56+00:00">
+<meta property="article:modified_time" content="2012-03-03T20:59:44+00:00">
+<meta property="article:author" content="http://clients.vanpattenmedia.com/wptest/author/admin/">
+<meta property="article:tag" content="tag1">
+<meta property="article:tag" content="tag2">
+<meta property="article:tag" content="tag3">
+<meta property="article:tag" content="tag4">
+<meta property="article:tag" content="tag5">
+<meta property="og:image" content="http://clients.vanpattenmedia.com/wptest/wp-content/themes/themename/screenshot.gif">
+<meta property="og:url" content="http://clients.vanpattenmedia.com/wptest/2011/10/hello-world/">
+<meta property="og:site_name" content="WordPress 3.3 test">
+<meta property="og:description" content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed arcu ante, eget lobortis libero. Vestibulum quam lorem, eleifend ac&hellip;">
+<meta property="og:locale" content="en_US">')
+			
+			 . '</code></pre>
+		</div>
+		<div class="wp-tab-panel code-preview" id="tabs-3" style="display: none;">
+			<pre class="prettyprint"><code class="lang-html">' .
+
+esc_html('<meta property="og:title" content="Chris Van Patten">
+<meta property="og:type" content="profile">
+<meta property="profile:first_name" content="Chris">
+<meta property="profile:last_name" content="Van Patten">
+<meta property="og:image" content="http://0.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=150">
+<meta property="og:url" content="http://clients.vanpattenmedia.com/wptest/author/admin/">
+<meta property="og:site_name" content="WordPress 3.3 test">
+<meta property="og:description" content="Just another WordPress site">
+<meta property="og:locale" content="en_US">')
+			
+			 . '</code></pre>
+		</div>';
 }
 
 // og:title
@@ -202,8 +246,8 @@ function easy_og_type() {
 			<p>The <strong>website</strong> type is used on the front page and most archive pages.</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p><input type="checkbox" name="easy_og_options[article-pubdate]" ' . checked( $options['article-pubdate'], 'on', false ) . '> Include article published dates</p>
-			<p><input type="checkbox" name="easy_og_options[article-moddate]" ' . checked( $options['article-moddate'], 'on', false ) . '> Include article modified dates</p>
+			<p><input type="checkbox" name="easy_og_options[article-pubdate]" ' . checked( $options['article-pubdate'], 'on', false ) . '> Include article published datetime</p>
+			<p><input type="checkbox" name="easy_og_options[article-moddate]" ' . checked( $options['article-moddate'], 'on', false ) . '> Include article modified datetime</p>
 			<p><input type="checkbox" name="easy_og_options[article-tag]" ' . checked( $options['article-tag'], 'on', false ) . '> Include article tags</p>
 			<p>Where should we get the data for OpenGraph article tags? <strong>' . $options['article-cattag'] . '</strong></p>
 		</div>
@@ -306,18 +350,14 @@ function easy_og_fbprops() {
 	$options = get_option('easy_og_options');
 	
 	echo '<ul class="wp-tab-bar">
-			<li class="wp-tab-active"><a href="#tabs-1">Tab 1</a></li>
-			<li><a href="#tabs-2">Tab 2</a></li>
-			<li><a href="#tabs-3">Tab 3</a></li>
+			<li class="wp-tab-active"><a href="#tabs-1">fb:admins</a></li>
+			<li><a href="#tabs-2">fb:app_id</a></li>
 		</ul>
 		<div class="wp-tab-panel" id="tabs-1">
 			<p>Tab 1 content</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
 			<p>Tab 2 content</p>
-		</div>
-		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
-			<p>Tab 3 content</p>
 		</div>';
 }
 
