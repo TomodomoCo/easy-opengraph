@@ -25,6 +25,11 @@
 	margin-top: 2px;
 }
 
+.wp-tab-panel {
+	min-height: 200px !important;
+	height: auto !important;
+}
+
 
 /**
  *
@@ -39,6 +44,11 @@
 	min-height: 64px;
 	overflow-x: auto;
 	padding: 0 1em;
+}
+
+#code-preview code {
+	padding: 0;
+	background: #FFF;
 }
 
 

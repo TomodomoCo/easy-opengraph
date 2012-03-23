@@ -58,6 +58,7 @@ function easy_og_defaults() {
 		
 		// image
 		"image-status"            => "on",
+		    "image-uploaded"      => "",
 		    "image-dimensions"    => "",
 		    "image-featured"      => "on",
 		    "image-scan"          => "",
@@ -233,7 +234,7 @@ function easy_og() {
 			// If it's available, use the uploaded default image
 				
 				// Get the image info
-				$image_info = wp_get_attachment_image_src($easy_og_image_id, 'medium');
+				$image_info = wp_get_attachment_image_src($options['image-uploaded'], 'medium');
 				
 				// Echo it out
 				echo '<meta property="og:image" content="' . $uploads['baseurl'] . str_replace($parsed_base[path], '', $image_info[0]) . '">' . "\n";

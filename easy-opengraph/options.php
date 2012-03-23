@@ -9,19 +9,28 @@
 
 function easy_og_load_ext($hook) {
 	if ( $hook == 'settings_page_easy_og' ) {
-		// Register scripts
+		// Register Waypoints
 		wp_register_script('easy_og_waypoints', 'http://cdnjs.cloudflare.com/ajax/libs/waypoints/1.1/waypoints.min.js');
 		wp_register_script('easy_og_waypoints_ssl', 'https://cdnjs.cloudflare.com/ajax/libs/waypoints/1.1/waypoints.min.js');
+		
+		// Register Prettify
+		wp_register_script('easy_og_prettify', 'http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js');
+		wp_register_script('easy_og_prettify_ssl', 'https://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js');
+		wp_register_style('easy_og_prettify_css', plugins_url('css/prettify.css', __FILE__));
+		
+		// Register Plugin JS	
 		wp_register_script('easy_og_js', plugins_url('js/script.js', __FILE__));
 		
-		// Register style
+		// Register Plugin Style
 		wp_register_style('easy_og_style', plugins_url('css/style.css', __FILE__));
 		
 		// Enqueue scripts
 		if (is_ssl()) {
 			wp_enqueue_script('easy_og_waypoints_ssl');
+			wp_enqueue_script('easy_og_prettify_ssl');
 		} else {
 			wp_enqueue_script('easy_og_waypoints');
+			wp_enqueue_script('easy_og_prettify');
 		}
 		wp_enqueue_script('common');
 		wp_enqueue_script('wp-lists');
@@ -32,6 +41,7 @@ function easy_og_load_ext($hook) {
 		
 		// Enqueue style
 		wp_enqueue_style('easy_og_style');
+		wp_enqueue_style('easy_og_prettify_css');
 		wp_enqueue_style('thickbox');
 	}
 }
@@ -162,14 +172,14 @@ function easy_og_settings() {
 // Preview
 function easy_og_preview() {
 	echo '<div id="code-preview">
-		<pre>' .
+		<pre class="prettyprint"><code class="lang-html">' .
 			esc_html('<meta property="og:title" content="WordPress 3.3 test">
 <meta property="og:type" content="website">
 <meta property="og:image" content="http://clients.vanpattenmedia.com/wptest/wp-content/themes/themename/img/screenshot.jpg">
 <meta property="og:url" content="http://clients.vanpattenmedia.com/wptest">
 <meta property="og:site_name" content="WordPress 3.3 test">
 <meta property="og:description" content="Long description of site.">
-<meta property="og:locale" content="en_US">') . '</pre>
+<meta property="og:locale" content="en_US">') . '</code></pre>
 	</div>';
 }
 
@@ -217,7 +227,18 @@ function easy_og_image() {
 		</ul>
 		<div class="wp-tab-panel" id="tabs-1">
 			<p>Upload a default image below. <strong><i>(Recommended)</i></strong></p>
-			<p><a href="javascript:;" class="button-secondary" id="upload-default-image">Upload image</a></p>
+			<p>
+				<a href="javascript:;" class="button-secondary" id="upload-default-image">Upload image</a>
+				<input type="hidden" name="easy_og_options[image-uploaded]" value="' . $options['image-uploaded'] . '">
+			</p>
+			
+			<div id="image-uploaded">';
+			if ( isset($options['image-uploaded']) && !empty($options['image-uploaded']) ) {
+				$image_info = wp_get_attachment_image_src($options['image-uploaded'], 'medium');
+				echo '<img src="' . $image_info[0] . '">';
+			}
+			echo '</div>
+			
 			<p><strong>Note:</strong> If no default is set, we will use your active theme&rsquo;s sample screenshot.</p>
 			<p><input type="checkbox" name="easy_og_options[image-dimensions]" ' . checked( $options['image-dimensions'], 'on', false ) . '> Include image dimensions, if available</i></strong></p>
 		</div>

@@ -1,4 +1,6 @@
 jQuery(document).ready( function($) {
+	prettyPrint();
+
 	// close postboxes that should be closed
 	$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
 	
@@ -78,8 +80,14 @@ jQuery(document).ready( function($) {
 		var classes = jQuery('img', html).attr('class').split(' ');
 		var attachmentID = parseInt( classes[classes.length - 1].substring(9, classes[classes.length - 1].length) );
 		
+		// Set the attachment ID
+		$('input[name="easy_og_options[image-uploaded]"]').val(attachmentID);
+		
 		// Get the img src
 		var imgurl = jQuery('img',html).attr('src');
+		
+		// Set the image src
+		$('div#image-uploaded').html('<img src="' + imgurl + '">');
 		
 		tb_remove();
 	}
