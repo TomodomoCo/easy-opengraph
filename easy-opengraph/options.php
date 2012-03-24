@@ -104,31 +104,31 @@ function easy_og_settings() {
 	 */
 	
 	// Preview
-	add_meta_box('preview', 'Code Preview', 'easy_og_preview', 'easy_og', 'side', 'core');
+	add_meta_box('preview', 'Code Preview', 'easy_og_preview_box', 'easy_og', 'side', 'core');
 	
 	// Title
-	add_meta_box('easy_og-title', '<input type="checkbox" checked disabled> Title', 'easy_og_title', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-title', '<input type="checkbox" checked disabled> Title', 'easy_og_title_box', 'easy_og', 'normal', 'core');
 	
 	// Type
-	add_meta_box('easy_og-type', '<input type="checkbox" checked disabled> Type', 'easy_og_type', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-type', '<input type="checkbox" checked disabled> Type', 'easy_og_type_box', 'easy_og', 'normal', 'core');
 	
 	// Image
-	add_meta_box('easy_og-image', '<input type="checkbox" checked disabled> Image', 'easy_og_image', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-image', '<input type="checkbox" checked disabled> Image', 'easy_og_image_box', 'easy_og', 'normal', 'core');
 	
 	// URL
-	add_meta_box('easy_og-url', '<input type="checkbox" checked disabled> URL', 'easy_og_url', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-url', '<input type="checkbox" checked disabled> URL', 'easy_og_url_box', 'easy_og', 'normal', 'core');
 	
 	// Site Name
-	add_meta_box('easy_og-site_name', '<input name="easy_og_options[site_name-status]" type="checkbox" ' . checked( $options['site_name-status'], 'on', false ) . '> Site Name', 'easy_og_site_name', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-site_name', '<input name="easy_og_options[site_name-status]" type="checkbox" ' . checked( $options['site_name-status'], 'on', false ) . '> Site Name', 'easy_og_site_name_box', 'easy_og', 'normal', 'core');
 	
 	// Description
-	add_meta_box('easy_og-description', '<input name="easy_og_options[description-status]" type="checkbox" ' . checked( $options['description-status'], 'on', false ) . '> Description', 'easy_og_description', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-description', '<input name="easy_og_options[description-status]" type="checkbox" ' . checked( $options['description-status'], 'on', false ) . '> Description', 'easy_og_description_box', 'easy_og', 'normal', 'core');
 	
 	// Locale
-	add_meta_box('easy_og-locale', '<input name="easy_og_options[locale-status]" type="checkbox" ' . checked( $options['locale-status'], 'on', false ) . '> Locale', 'easy_og_locale', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-locale', '<input name="easy_og_options[locale-status]" type="checkbox" ' . checked( $options['locale-status'], 'on', false ) . '> Locale', 'easy_og_locale', 'easy_og_box', 'normal', 'core');
 	
 	// Facebook-specific Properties
-	add_meta_box('easy_og-fbprops', '<input name="easy_og_options[fbprops-status]" type="checkbox" ' . checked( $options['fbprops-status'], 'on', false ) . '> Facebook-specific Properties', 'easy_og_fbprops', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-fbprops', '<input name="easy_og_options[fbprops-status]" type="checkbox" ' . checked( $options['fbprops-status'], 'on', false ) . '> Facebook-specific Properties_box', 'easy_og_fbprops', 'easy_og', 'normal', 'core');
 	
 	?>
 	<div class="wrap">
@@ -170,70 +170,65 @@ function easy_og_settings() {
  */
 
 // Preview
-function easy_og_preview() {
-	echo '<ul class="wp-tab-bar">
+function easy_og_preview_box() {
+
+	global $post;
+	$rand_posts = get_posts('numberposts=1&orderby=rand');
+	
+	foreach( $rand_posts as $post ) {
+
+	?>
+		<ul class="wp-tab-bar">
 			<li class="wp-tab-active"><a href="#tabs-1">type:website</a></li>
 			<li><a href="#tabs-2">type:article</a></li>
 			<li><a href="#tabs-3">type:profile</a></li>
 		</ul>
 		<div class="wp-tab-panel code-preview" id="tabs-1">
-			<pre class="prettyprint"><code class="lang-html">' .
-
-esc_html('<meta property="og:title" content="WordPress 3.3 test">
-<meta property="og:type" content="website">
-<meta property="og:image" content="http://clients.vanpattenmedia.com/wptest/wp-content/themes/themename/img/screenshot.jpg">
-<meta property="og:url" content="http://clients.vanpattenmedia.com/wptest">
-<meta property="og:site_name" content="WordPress 3.3 test">
-<meta property="og:description" content="Long description of site.">
-<meta property="og:locale" content="en_US">')
-			
-			 . '</code></pre>
+			<pre class="prettyprint"><code class="lang-html"><?php
+				/**
+				 *
+				 * Website
+				 *
+				 */
+				
+				esc_html(easy_og('website_demo'));
+			?></code></pre>
 		</div>
 		<div class="wp-tab-panel code-preview" id="tabs-2" style="display: none;">
-			<pre class="prettyprint"><code class="lang-html">' .
-			
-esc_html('<meta property="og:title" content="Hello world!">
-<meta property="og:type" content="article">
-<meta property="article:published_time" content="2011-10-29T14:59:56+00:00">
-<meta property="article:modified_time" content="2012-03-03T20:59:44+00:00">
-<meta property="article:author" content="http://clients.vanpattenmedia.com/wptest/author/admin/">
-<meta property="article:tag" content="tag1">
-<meta property="article:tag" content="tag2">
-<meta property="article:tag" content="tag3">
-<meta property="article:tag" content="tag4">
-<meta property="article:tag" content="tag5">
-<meta property="og:image" content="http://clients.vanpattenmedia.com/wptest/wp-content/themes/themename/screenshot.gif">
-<meta property="og:url" content="http://clients.vanpattenmedia.com/wptest/2011/10/hello-world/">
-<meta property="og:site_name" content="WordPress 3.3 test">
-<meta property="og:description" content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed arcu ante, eget lobortis libero. Vestibulum quam lorem, eleifend ac&hellip;">
-<meta property="og:locale" content="en_US">')
-			
-			 . '</code></pre>
+			<pre class="prettyprint"><code class="lang-html"><?php
+				/**
+				 *
+				 * Article
+				 *
+				 */
+				
+				easy_og('article_demo');
+			?></code></pre>
 		</div>
 		<div class="wp-tab-panel code-preview" id="tabs-3" style="display: none;">
-			<pre class="prettyprint"><code class="lang-html">' .
-
-esc_html('<meta property="og:title" content="Chris Van Patten">
-<meta property="og:type" content="profile">
-<meta property="profile:first_name" content="Chris">
-<meta property="profile:last_name" content="Van Patten">
-<meta property="og:image" content="http://0.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=150">
-<meta property="og:url" content="http://clients.vanpattenmedia.com/wptest/author/admin/">
-<meta property="og:site_name" content="WordPress 3.3 test">
-<meta property="og:description" content="Just another WordPress site">
-<meta property="og:locale" content="en_US">')
-			
-			 . '</code></pre>
-		</div>';
+			<pre class="prettyprint"><code class="lang-html"><?php
+				/**
+				 *
+				 * Profile
+				 *
+				 */
+				
+				easy_og('profile_demo');
+			?></code></pre>
+		</div>
+	<?php
+	
+	}
+	
 }
 
 // og:title
-function easy_og_title() {
+function easy_og_title_box() {
 	echo '<p>There are no adjustable settings for the <strong>title</strong> property.</p>';
 }
 
 // og:type
-function easy_og_type() {
+function easy_og_type_box() {
 	// Get options
 	$options = get_option('easy_og_options');
 	
@@ -260,7 +255,7 @@ function easy_og_type() {
 }
 
 // og:image
-function easy_og_image() {
+function easy_og_image_box() {
 	// Get options
 	$options = get_option('easy_og_options');
 	
@@ -296,17 +291,17 @@ function easy_og_image() {
 }
 
 // og:url
-function easy_og_url() {
+function easy_og_url_box() {
 	echo '<p>There are no adjustable settings for the <strong>URL</strong> property.</p>';
 }
 
 // og:site_name
-function easy_og_site_name() {
+function easy_og_site_name_box() {
 	echo '<p>There are no adjustable settings for the <strong>site name</strong> property.</p><p>The <strong>site name</strong> is equivalent to your site title, which is set in your <a href="' . admin_url('options-general.php') . '">general settings</a>.</p>';
 }
 
 // og:description
-function easy_og_description() {
+function easy_og_description_box() {
 	// Get options
 	$options = get_option('easy_og_options');
 	
@@ -328,7 +323,7 @@ function easy_og_description() {
 }
 
 // og:locale
-function easy_og_locale() {
+function easy_og_locale_box() {
 	// Get options
 	$options = get_option('easy_og_options');
 	
@@ -345,7 +340,7 @@ function easy_og_locale() {
 }
 
 // FB properties
-function easy_og_fbprops() {
+function easy_og_fbprops_box() {
 	// Get options
 	$options = get_option('easy_og_options');
 	

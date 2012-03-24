@@ -107,32 +107,17 @@ require_once( EASY_OG_PATH . 'options.php');
  * Set up the OpenGraph tags
  *
  */
-
-function easy_og() {
-	// Get options
-	$options = get_option('easy_og_options');
+ 
+function easy_og_title($options, $posts) {
 	
-	global $posts;
-
-	
-	/**
-	 *
-	 * og:title
-	 *
-	 */
-	 
 	if ( is_front_page() || is_home() ) {
 		echo '<meta property="og:title" content="' . get_bloginfo('name') . '">' . "\n";
 	} else {
 		echo '<meta property="og:title" content="' . wp_title('', false) . '">' . "\n";
 	}
-	
-	
-	/**
-	 *
-	 * og:type
-	 *
-	 */
+}
+
+function easy_og_type($options, $posts) {
 	
 	if ( is_single() ) {
 		echo '<meta property="og:type" content="article">' . "\n";
@@ -183,14 +168,10 @@ function easy_og() {
 	} else {
 		echo '<meta property="og:type" content="website">' . "\n";
 	}
+}
+
+function easy_og_image($options, $posts) {
 	
-	
-	/**
-	 *
-	 * og:image
-	 *
-	 */
-	 
 	if ( is_author() && ($options['profile-status'] == 'on') && ($options['image-gravatar'] == 'on') ) {
 	// If we're on an author page, og:profile support is on, and we want to use Gravatars...
 	
@@ -212,7 +193,7 @@ function easy_og() {
 		$uploads = wp_upload_dir();
 		$parsed_base = parse_url($uploads['baseurl']);
 		
-		if ( function_exists('get_post_thumbnail_id') && get_post_thumbnail_id() && ($options['image-featured'] == 'on') ) {
+		if ( function_exists('get_post_thumbnail_id') && get_post_thumbnail_id() && ($options['image-featured'] == 'on') && !is_front_page() && !is_archive() ) {
 		// Use featured image, if it's available and set
 			
 			// Get featured image ID and image info
@@ -231,8 +212,8 @@ function easy_og() {
 		} else {
 		// If not, cycle through some defaults.
 		
-			if ( isset( $easy_og_image_default ) ) {
-			// If it's available, use the uploaded default image
+			if ( isset($options['image-uploaded']) && !empty($options['image-uploaded']) ) {
+			// If it's available, use the user's uploaded default image
 				
 				// Get the image info
 				$image_info = wp_get_attachment_image_src($options['image-uploaded'], 'medium');
@@ -242,8 +223,8 @@ function easy_og() {
 				
 				// Show dimensions
 				if ( $options['image-dimensions'] == 'on' ) {
-					echo '<meta property="og:image:width" content=' . $image_info[1] . '>' . "\n";
-					echo '<meta property="og:image:height" content=' . $image_info[2] . '>' . "\n";
+					echo '<meta property="og:image:width" content="' . $image_info[1] . '">' . "\n";
+					echo '<meta property="og:image:height" content="' . $image_info[2] . '">' . "\n";
 				}
 				
 			} else {
@@ -307,14 +288,10 @@ function easy_og() {
 			
 		}
 	}
+}
+
+function easy_og_url($options, $posts) {
 	
-	
-	/**
-	 *
-	 * og:url
-	 *
-	 */
-	 
 	if ( is_single() || is_page() ) {
 		echo '<meta property="og:url" content="' . get_permalink() .'">' . "\n";
 	} elseif ( is_author() ) {
@@ -324,24 +301,15 @@ function easy_og() {
 	} else {
 		echo '<meta property="og:url" content="' . esc_url( $_SERVER['REQUEST_URI'] ) .'">' . "\n";
 	}
-	
-	
-	/**
-	 *
-	 * og:site_name
-	 *
-	 */
-	
+}
+
+function easy_og_site_name($options, $posts) {
 	if ( $options['site_name-status'] == 'on' ) {
 		echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '">' . "\n";
 	}
-	
-	
-	/**
-	 *
-	 * og:description
-	 *
-	 */
+}
+
+function easy_og_description($options, $posts) {
 	
 	if ( $options['description-status'] == 'on' ) {
 		$author_bio = get_the_author_meta('description', $posts[0]->post_author);
@@ -361,25 +329,15 @@ function easy_og() {
 			echo '<meta property="og:description" content="' . $options['description-long'] . '">' . "\n";
 		}
 	}
-	
-	
-	/**
-	 *
-	 * og:locale
-	 *
-	 */
-	
+}
+
+function easy_og_locale($options, $posts) {
 	if ( $options['locale-status'] == 'on' ) {
 		echo '<meta property="og:locale" content="' . $options['locale-setting'] . '">' . "\n";
 	}
-	
-	
-	/**
-	 *
-	 * fb:properties
-	 *
-	 */
-	
+}
+
+function easy_og_fbprops($options, $posts) {
 	if ( $options['fbprops-status'] == 'on' ) {
 		
 		if ( isset($options['fbprops-admins']) && !empty($options['fbprops-admins']) ) {
@@ -391,6 +349,40 @@ function easy_og() {
 		}
 		
 	}
+}
+
+function easy_og($demotype = NULL) {
+	// Get options
+	$options = get_option('easy_og_options');
+	global $posts;
+	
+	if ( ($demotype == 'website_demo') || ($demotype == 'article_demo') || ($demotype == 'profile_demo') ) {
+		return;
+	}
+	
+	// og:title
+	easy_og_title($options, $posts);
+	
+	// og:type
+	easy_og_type($options, $posts);
+	
+	// og:image
+	easy_og_image($options, $posts);
+	
+	// og:url
+	easy_og_url($options, $posts);
+	
+	// og:site_name
+	easy_og_site_name($options, $posts);
+	
+	// og:description
+	easy_og_description($options, $posts);
+	
+	// og:locale
+	easy_og_locale($options, $posts);
+	
+	// fb:properties
+	easy_og_fbprops($options, $posts);
 	
 	// newline for nicer output
 	echo "\n";
