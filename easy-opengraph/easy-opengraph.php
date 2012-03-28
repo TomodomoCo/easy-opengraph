@@ -108,18 +108,23 @@ require_once( EASY_OG_PATH . 'options.php');
  *
  */
  
-function easy_og_title($options, $posts) {
+function easy_og_title($options, $posts, $demo_mode = false) {
 	
-	if ( is_front_page() || is_home() ) {
+	if ( is_front_page() || is_home() || $demo_mode == 'website' ) {
 		echo '<meta property="og:title" content="' . get_bloginfo('name') . '">' . "\n";
 	} else {
 		echo '<meta property="og:title" content="' . wp_title('', false) . '">' . "\n";
 	}
 }
 
-function easy_og_type($options, $posts) {
+function easy_og_type($options, $posts, $demo_mode = false) {
+
+	if ( $demo_mode == 'article' )
+	{
+		$post = $posts[0];
+	}
 	
-	if ( is_single() ) {
+	if ( is_single() || $demo_mode == 'article' ) {
 		echo '<meta property="og:type" content="article">' . "\n";
 		
 		// article:published_time
@@ -170,9 +175,14 @@ function easy_og_type($options, $posts) {
 	}
 }
 
-function easy_og_image($options, $posts) {
+function easy_og_image($options, $posts, $demo_mode = false) {
+
+	if ( $demo_mode == 'article' )
+	{
+		$post = $posts[0];
+	}
 	
-	if ( is_author() && ($options['profile-status'] == 'on') && ($options['image-gravatar'] == 'on') ) {
+	if ( ( is_author() || $demo_mode == 'profile' ) && ($options['profile-status'] == 'on') && ($options['image-gravatar'] == 'on') ) {
 	// If we're on an author page, og:profile support is on, and we want to use Gravatars...
 	
 		// Get src, width, and height
@@ -182,8 +192,8 @@ function easy_og_image($options, $posts) {
 		
 		// Show dimensions
 		if ( $options['image-dimensions'] == 'on' ) {
-			echo '<meta property="og:image:width" content="' . $matches[2][1] . '">' . "\n";
-			echo '<meta property="og:image:height" content="' . $matches[2][2] . '">' . "\n";
+			echo '<meta property="og:image:width" content="' . intval( $matches[2][1] ) . '">' . "\n";
+			echo '<meta property="og:image:height" content="' . intval( $matches[2][2] ) . '">' . "\n";
 		}
 		
 	} else {
@@ -205,8 +215,8 @@ function easy_og_image($options, $posts) {
 			
 			// Show dimensions
 			if ( $options['image-dimensions'] == 'on' ) {
-				echo '<meta property="og:image:width" content="' . $image_info[1] . '">' . "\n";
-				echo '<meta property="og:image:height" content="' . $image_info[2] . '">' . "\n";
+				echo '<meta property="og:image:width" content="' . intval( $image_info[1] ) . '">' . "\n";
+				echo '<meta property="og:image:height" content="' . intval( $image_info[2] ) . '">' . "\n";
 			}
 			
 		} else {
@@ -223,29 +233,29 @@ function easy_og_image($options, $posts) {
 				
 				// Show dimensions
 				if ( $options['image-dimensions'] == 'on' ) {
-					echo '<meta property="og:image:width" content="' . $image_info[1] . '">' . "\n";
-					echo '<meta property="og:image:height" content="' . $image_info[2] . '">' . "\n";
+					echo '<meta property="og:image:width" content="' . intval( $image_info[1] ) . '">' . "\n";
+					echo '<meta property="og:image:height" content="' . intval( $image_info[2] ) . '">' . "\n";
 				}
 				
 			} else {
 			// Otherwise, auto-detect a theme screenshot
 			
 				// Get the theme directory as an array
-				$theme_dir = scandir(EASY_OG_THEME_PATH);
+				$theme_dir = @scandir(EASY_OG_THEME_PATH);
 				
 				// Mush the $theme_dir array into a string and search it for a screenshot
 				preg_match_all('/(screenshot.(?:jpg|gif|png|jpeg)),/', implode(',', $theme_dir), $screenshot);
 				
 				// If we find any, grab the first one and echo it out
 				if ( isset($screenshot[1][0]) && !empty($screenshot[1][0]) ) {
-					echo '<meta property="og:image" content="' . EASY_OG_THEME_URL . $screenshot[1][0] . '">' . "\n";
+					echo '<meta property="og:image" content="' . esc_url( EASY_OG_THEME_URL . $screenshot[1][0] ) . '">' . "\n";
 				}
 				
 			}
 		}
 		
 		// Scan for images in a post
-		if ( is_single() && ($options['image-scan'] == 'on') ) {
+		if ( ( is_single() || $demo_mode == 'article' ) && ($options['image-scan'] == 'on') ) {
 		
 			// Run preg_match_all to grab all the images and save the results in $images
 			preg_match_all('~<img [^>]* />~', $posts[0]->post_content, $images);
@@ -265,12 +275,12 @@ function easy_og_image($options, $posts) {
 						$image_info = wp_get_attachment_image_src($image_id[1][0], 'medium');
 						
 						// Echo it out
-						echo '<meta property="og:image" content="' . $uploads['baseurl'] . str_replace($parsed_base[path], '', $image_info[0]) . '">' . "\n";
+						echo '<meta property="og:image" content="' . esc_url( $uploads['baseurl'] . str_replace($parsed_base[path], '', $image_info[0]) ) . '">' . "\n";
 						
 						// Show dimensions
 						if ( $options['image-dimensions'] == 'on' ) {
-							echo '<meta property="og:image:width" content="' . $image_info[1] . '">' . "\n";
-							echo '<meta property="og:image:height" content="' . $image_info[2] . '">' . "\n";
+							echo '<meta property="og:image:width" content="' . intval( $image_info[1] ) . '">' . "\n";
+							echo '<meta property="og:image:height" content="' . intval( $image_info[2] ) . '">' . "\n";
 						}
 						
 					} else {
@@ -280,7 +290,7 @@ function easy_og_image($options, $posts) {
 						preg_match_all('/(src)="([^"]*)"/i', $image, $src_match);
 						
 						// Echo it out
-						echo '<meta property="og:image" content="' . $src_match[2][0] . '">' . "\n";
+						echo '<meta property="og:image" content="' . esc_url( $src_match[2][0] ) . '">' . "\n";
 						
 					}
 				}
@@ -290,26 +300,31 @@ function easy_og_image($options, $posts) {
 	}
 }
 
-function easy_og_url($options, $posts) {
+function easy_og_url($options, $posts, $demo_mode = false) {
+
+	if ( $demo_mode == 'article' )
+	{
+		$post = $posts[0];
+	}
 	
-	if ( is_single() || is_page() ) {
+	if ( is_single() || is_page() || $demo_mode == 'article' ) {
 		echo '<meta property="og:url" content="' . get_permalink() .'">' . "\n";
-	} elseif ( is_author() ) {
+	} elseif ( is_author() || $demo_mode == 'profile' ) {
 		echo '<meta property="og:url" content="' . get_author_posts_url($posts[0]->post_author) .'">' . "\n";
-	} elseif ( is_front_page() || is_home() ) {
+	} elseif ( is_front_page() || is_home() || $demo_mode == 'website' ) {
 		echo '<meta property="og:url" content="' . site_url() .'">' . "\n";
 	} else {
 		echo '<meta property="og:url" content="' . esc_url( $_SERVER['REQUEST_URI'] ) .'">' . "\n";
 	}
 }
 
-function easy_og_site_name($options, $posts) {
+function easy_og_site_name($options, $posts, $demo_mode = false) {
 	if ( $options['site_name-status'] == 'on' ) {
 		echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '">' . "\n";
 	}
 }
 
-function easy_og_description($options, $posts) {
+function easy_og_description($options, $posts, $demo_mode = false) {
 	
 	if ( $options['description-status'] == 'on' ) {
 		$author_bio = get_the_author_meta('description', $posts[0]->post_author);
@@ -317,35 +332,35 @@ function easy_og_description($options, $posts) {
 		// Strip the content down to its bare essentials to make sure we can use it
 		$clean_content = trim(str_replace(' ', '', str_replace('&nbsp;', '', wp_trim_words(strip_shortcodes($posts[0]->post_content), 20))));
 		
-		if ( is_single() && ($options['description-article'] == 'on') && empty($posts[0]->post_excerpt) && !empty($clean_content) ) {
-			echo '<meta property="og:description" content="' . wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) . '">' . "\n";
-		} elseif ( is_single() && ($options['description-article'] == 'on') && !empty($posts[0]->post_excerpt) ) {
-			echo '<meta property="og:description" content="' . $posts[0]->post_excerpt . '">' . "\n";
-		} elseif ( is_author() && !empty($author_bio) && ($options['description-profile'] == 'on') ) {
-			echo '<meta property="og:description" content="' . wp_trim_words(get_the_author_meta('description', $posts[0]->post_author), 20) . '">' . "\n";
-		} elseif ( is_archive() && !is_author() ) {
-			echo '<meta property="og:description" content="' . $options['description-long'] . '">' . "\n";
+		if ( ( is_single() || $demo_mode == 'article' ) && ($options['description-article'] == 'on') && empty($posts[0]->post_excerpt) && !empty($clean_content) ) {
+			echo '<meta property="og:description" content="' . esc_attr( wp_trim_words(strip_shortcodes($posts[0]->post_content), 20) ) . '">' . "\n";
+		} elseif ( ( is_single() || $demo_mode == 'article' ) && ($options['description-article'] == 'on') && !empty($posts[0]->post_excerpt) ) {
+			echo '<meta property="og:description" content="' . esc_attr( $posts[0]->post_excerpt ) . '">' . "\n";
+		} elseif ( (is_author() || $demo_mode == 'profile') && !empty($author_bio) && ($options['description-profile'] == 'on') ) {
+			echo '<meta property="og:description" content="' . esc_attr( wp_trim_words(get_the_author_meta('description', $posts[0]->post_author), 20) ) . '">' . "\n";
+		} elseif ( (is_archive() || $demo_mode == 'article' ) && !is_author() && $demo_mode != 'profile' ) {
+			echo '<meta property="og:description" content="' . esc_attr( $options['description-long'] ) . '">' . "\n";
 		} else {
-			echo '<meta property="og:description" content="' . $options['description-long'] . '">' . "\n";
+			echo '<meta property="og:description" content="' . esc_attr( $options['description-long'] ) . '">' . "\n";
 		}
 	}
 }
 
-function easy_og_locale($options, $posts) {
+function easy_og_locale($options, $posts, $demo_mode = false) {
 	if ( $options['locale-status'] == 'on' ) {
-		echo '<meta property="og:locale" content="' . $options['locale-setting'] . '">' . "\n";
+		echo '<meta property="og:locale" content="' . esc_attr( $options['locale-setting'] ) . '">' . "\n";
 	}
 }
 
-function easy_og_fbprops($options, $posts) {
+function easy_og_fbprops($options, $posts, $demo_mode = false) {
 	if ( $options['fbprops-status'] == 'on' ) {
 		
 		if ( isset($options['fbprops-admins']) && !empty($options['fbprops-admins']) ) {
-			echo '<meta property="fb:admins" content="' . $options['fbprops-admins'] . '">' . "\n";
+			echo '<meta property="fb:admins" content="' . esc_attr( $options['fbprops-admins'] ) . '">' . "\n";
 		}
 		
 		if ( isset($options['fbprops-app_id']) && !empty($options['fbprops-app_id']) ) {
-			echo '<meta property="fb:app_id" content="' . $options['fbprops-app_id'] . '">' . "\n";
+			echo '<meta property="fb:app_id" content="' . esc_attr( $options['fbprops-app_id'] ) . '">' . "\n";
 		}
 		
 	}
@@ -366,28 +381,28 @@ function easy_og($should_demo = false, $posts = null) {
 	}
 	
 	// og:title
-	easy_og_title($options, $posts);
+	easy_og_title($options, $posts, $should_demo);
 	
 	// og:type
-	easy_og_type($options, $posts);
+	easy_og_type($options, $posts, $should_demo);
 	
 	// og:image
-	easy_og_image($options, $posts);
+	easy_og_image($options, $posts, $should_demo);
 	
 	// og:url
-	easy_og_url($options, $posts);
+	easy_og_url($options, $posts, $should_demo);
 	
 	// og:site_name
-	easy_og_site_name($options, $posts);
+	easy_og_site_name($options, $posts, $should_demo);
 	
 	// og:description
-	easy_og_description($options, $posts);
+	easy_og_description($options, $posts, $should_demo);
 	
 	// og:locale
-	easy_og_locale($options, $posts);
+	easy_og_locale($options, $posts, $should_demo);
 	
 	// fb:properties
-	easy_og_fbprops($options, $posts);
+	easy_og_fbprops($options, $posts, $should_demo);
 	
 	// newline for nicer output
 	echo "\n";

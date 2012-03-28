@@ -191,18 +191,18 @@ function easy_og_preview_box() {
 				 *
 				 */
 				
-				echo esc_html(easy_og(true));
+				echo esc_html(easy_og('website'));
 			?></code></pre>
 		</div>
 		<div class="wp-tab-panel code-preview" id="tabs-2" style="display: none;">
 			<pre class="prettyprint"><code class="lang-html"><?php
-				/**
+				/**	
 				 *
 				 * Article
 				 *
 				 */
 				
-				echo esc_html(easy_og(true, &$rand_posts));
+				echo esc_html(easy_og('article', &$rand_posts));
 			?></code></pre>
 		</div>
 		<div class="wp-tab-panel code-preview" id="tabs-3" style="display: none;">
@@ -213,7 +213,7 @@ function easy_og_preview_box() {
 				 *
 				 */
 				
-				echo esc_html(easy_og(true, &$rand_posts));
+				echo esc_html(easy_og('profile', &$rand_posts));
 			?></code></pre>
 		</div>
 	<?php
