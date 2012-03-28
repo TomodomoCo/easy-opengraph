@@ -245,7 +245,7 @@ function easy_og_type_box() {
 			<p><input type="checkbox" id="easy_og_options_article-pubdate" name="easy_og_options[article-pubdate]" ' . checked( $options['article-pubdate'], 'on', false ) . '> Include article published datetime</p>
 			<p><input type="checkbox" id="easy_og_options_article-moddate" name="easy_og_options[article-moddate]" ' . checked( $options['article-moddate'], 'on', false ) . '> Include article modified datetime</p>
 			<p><input type="checkbox" id="easy_og_options_article-article-tag" name="easy_og_options[article-tag]" ' . checked( $options['article-tag'], 'on', false ) . '> Include article tags</p>
-			<p>Where should we get the data for OpenGraph article tags? <strong>' . $options['article-cattag'] . '</strong></p>
+			<p>Where should we get the data for OpenGraph article tags? <strong>' . esc_html( $options['article-cattag'] ) . '</strong></p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
 			<p>The <strong>profile</strong> type is used on author archive pages.</p>
@@ -269,13 +269,13 @@ function easy_og_image_box() {
 			<p>Upload a default image below. <strong><i>(Recommended)</i></strong></p>
 			<p>
 				<a href="javascript:;" class="button-secondary" id="upload-default-image">Upload image</a>
-				<input type="hidden" name="easy_og_options[image-uploaded]" value="' . $options['image-uploaded'] . '">
+				<input type="hidden" name="easy_og_options[image-uploaded]" value="' . esc_attr( $options['image-uploaded'] ) . '">
 			</p>
 			
 			<div id="image-uploaded">';
 			if ( isset($options['image-uploaded']) && !empty($options['image-uploaded']) ) {
 				$image_info = wp_get_attachment_image_src($options['image-uploaded'], 'medium');
-				echo '<img src="' . $image_info[0] . '">';
+				echo '<img src="' . esc_url ( $image_info[0] ) . '">';
 			}
 			echo '</div>
 			
@@ -313,7 +313,7 @@ function easy_og_description_box() {
 		</ul>
 		<div class="wp-tab-panel" id="tabs-1">
 			<p>Set a long description for your site. We use your slogan by default, but it can be longer.</p>
-			<p><textarea class="widefat" name="easy_og_options[description-long]">' . $options['description-long'] . '</textarea></p>
+			<p><textarea class="widefat" name="easy_og_options[description-long]">' . esc_attr( $options['description-long'] ) . '</textarea></p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
 			<p><input type="checkbox" id="easy_og_options_description-article" name="easy_og_options[description-article]" ' . checked( $options['description-article'], 'on', false ) . '> Set the article description from the post excerpt, if it exists (we&rsquo;ll generate one from your content if you don&rsquo;t set one manually)</p>
@@ -337,7 +337,7 @@ function easy_og_locale_box() {
 	}
 	
 	// Display the form and populate it with the set locale
-	echo '<input type="text" name="easy_og_options[locale-setting]" value="' . $options['locale-setting'] . '">';
+	echo '<input type="text" name="easy_og_options[locale-setting]" value="' . esc_attr( $options['locale-setting'] ) . '">';
 }
 
 // FB properties
@@ -350,10 +350,10 @@ function easy_og_fbprops_box() {
 			<li><a href="#tabs-2">fb:app_id</a></li>
 		</ul>
 		<div class="wp-tab-panel" id="tabs-1">
-			<input type="text" name="easy_og_options[fbprops-admins]" value="' . $options['fbprops-admins'] . '">
+			<input type="text" name="easy_og_options[fbprops-admins]" value="' . esc_attr( $options['fbprops-admins'] ) . '">
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<input type="text" name="easy_og_options[fbprops-app_id]" value="' . $options['fbprops-app_id'] . '">
+			<input type="text" name="easy_og_options[fbprops-app_id]" value="' . esc_attr( $options['fbprops-app_id'] ) . '">
 		</div>';
 }
 

@@ -175,11 +175,12 @@ function easy_og_type($options, $posts, $demo_mode = false) {
 	}
 }
 
-function easy_og_image($options, $posts, $demo_mode = false) {
+function easy_og_image($options, $posts, $demo_mode = false, $do_not_iterate_again = false) {
 
 	if ( $demo_mode )
 	{
 		$post = $posts[0];
+		
 	}
 	
 	if ( ( is_author() || $demo_mode == 'profile' ) && ($options['profile-status'] == 'on') && ($options['image-gravatar'] == 'on') ) {

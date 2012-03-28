@@ -106,7 +106,7 @@ jQuery(document).ready( function($) {
 		($('#easy_og_options_site-name').prop('checked')) ? $('.code-preview-og_site_name').show() : $('.code-preview-og_site_name').hide();
 		($('#easy_og_options_description-status').prop('checked')) ? $('.code-preview-og_description').show() : $('.code-preview-og_description').hide();
 		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_admins').show() : $('.code-preview-fb_admins').hide();
-		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_app_id').show() : $('.code-preview-fb_app_id').hide();		
+		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_app_id').show() : $('.code-preview-fb_app_id').hide();
 	};
 	
 	$('input:checkbox').click(function() {
