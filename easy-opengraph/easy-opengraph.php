@@ -119,7 +119,7 @@ function easy_og_title($options, $posts, $demo_mode = false) {
 
 function easy_og_type($options, $posts, $demo_mode = false) {
 
-	if ( $demo_mode == 'article' )
+	if ( $demo_mode )
 	{
 		$post = $posts[0];
 	}
@@ -147,14 +147,14 @@ function easy_og_type($options, $posts, $demo_mode = false) {
 			$posttags = get_the_tags($posts->ID);
 			if ($posttags) {
 				foreach($posttags as $tag) {
-					echo '<meta property="article:tag" content="' . $tag->name . '">' . "\n";
+					echo '<meta property="article:tag" content="' . esc_attr( $tag->name ) . '">' . "\n";
 				}
 			}
 		}
 			
-	} elseif ( is_author() && ($options['profile-status'] == 'on') ) {
+	} elseif ( (is_author()  && ($options['profile-status'] == 'on') ) || $demo_mode == 'profile' ) {
 		echo '<meta property="og:type" content="profile">' . "\n";
-		
+				
 		// profile:first_name
 		if ( get_the_author_meta('user_firstname', $posts[0]->post_author) ) {
 			echo '<meta property="profile:first_name" content="' . get_the_author_meta('user_firstname', $posts[0]->post_author) . '">' . "\n";
@@ -177,7 +177,7 @@ function easy_og_type($options, $posts, $demo_mode = false) {
 
 function easy_og_image($options, $posts, $demo_mode = false) {
 
-	if ( $demo_mode == 'article' )
+	if ( $demo_mode )
 	{
 		$post = $posts[0];
 	}
@@ -302,7 +302,7 @@ function easy_og_image($options, $posts, $demo_mode = false) {
 
 function easy_og_url($options, $posts, $demo_mode = false) {
 
-	if ( $demo_mode == 'article' )
+	if ( $demo_mode )
 	{
 		$post = $posts[0];
 	}
@@ -368,7 +368,40 @@ function easy_og_fbprops($options, $posts, $demo_mode = false) {
 
 function easy_og($should_demo = false, $posts = null) {
 	// Get options
-	$options = get_option('easy_og_options');
+	if ( !$should_demo )
+	{
+		$options = get_option('easy_og_options');
+	}
+	else {
+		// in demo mode, all the checkable options should be 'on'
+		// inherit other options from live options
+		
+		$original_options = get_option('easy_og_options');
+		
+		$options = array(
+		
+			'article-pubdate' 		=> 'on',
+			'article-moddate'		=> 'on',
+			'article-tag'			=> 'on',
+			'article-cattag'		=> 'on',
+			'profile-status'		=> 'on',
+			'profile-realnames'		=> 'on',
+			'profile-usernames'		=> 'on',
+			'image-uploaded' 		=> $original_options['image-uploaded'],
+			'image-dimensions'		=> 'on',
+			'image-featured'		=> 'on',
+			'image-scan'			=> 'on',
+			'image-gravatar'		=> 'on',
+			'description-long' 		=> $original_options['description-long'],
+			'description-article'	=> 'on',
+			'description-profile'	=> 'on',
+			'locale-setting'		=> $original_options['locale-setting'],
+			'fbprops-admins' 		=> $original_options['fbprops-admins'],
+			'fbprops-app_id' 		=> $original_options['fbprops-app_id'],
+			'site_name-status'		=> 'on',
+			'description-status'	=> 'on'
+		);
+	}
 	
 	if ( !$posts )
 	{

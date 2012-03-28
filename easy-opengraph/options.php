@@ -119,16 +119,16 @@ function easy_og_settings() {
 	add_meta_box('easy_og-url', '<input type="checkbox" checked disabled> URL', 'easy_og_url_box', 'easy_og', 'normal', 'core');
 	
 	// Site Name
-	add_meta_box('easy_og-site_name', '<input name="easy_og_options[site_name-status]" type="checkbox" ' . checked( $options['site_name-status'], 'on', false ) . '> Site Name', 'easy_og_site_name_box', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-site_name', '<input id="easy_og_options_site-name" name="easy_og_options[site_name-status]" type="checkbox" ' . checked( $options['site_name-status'], 'on', false ) . '> Site Name', 'easy_og_site_name_box', 'easy_og', 'normal', 'core');
 	
 	// Description
-	add_meta_box('easy_og-description', '<input name="easy_og_options[description-status]" type="checkbox" ' . checked( $options['description-status'], 'on', false ) . '> Description', 'easy_og_description_box', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-description', '<input id="easy_og_options_description-status" name="easy_og_options[description-status]" type="checkbox" ' . checked( $options['description-status'], 'on', false ) . '> Description', 'easy_og_description_box', 'easy_og', 'normal', 'core');
 	
 	// Locale
 	add_meta_box('easy_og-locale', '<input name="easy_og_options[locale-status]" type="checkbox" ' . checked( $options['locale-status'], 'on', false ) . '> Locale', 'easy_og_locale', 'easy_og_box', 'normal', 'core');
 	
 	// Facebook-specific Properties
-	add_meta_box('easy_og-fbprops', '<input name="easy_og_options[fbprops-status]" type="checkbox" ' . checked( $options['fbprops-status'], 'on', false ) . '> Facebook-specific Properties_box', 'easy_og_fbprops', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-fbprops', '<input id="easy_og_options_fbprops-status" name="easy_og_options[fbprops-status]" type="checkbox" ' . checked( $options['fbprops-status'], 'on', false ) . '> Facebook-specific Properties_box', 'easy_og_fbprops', 'easy_og', 'normal', 'core');
 	
 	?>
 	<div class="wrap">
@@ -191,7 +191,8 @@ function easy_og_preview_box() {
 				 *
 				 */
 				
-				echo esc_html(easy_og('website'));
+				easy_og_preview_output( easy_og ( 'website' ) );
+				
 			?></code></pre>
 		</div>
 		<div class="wp-tab-panel code-preview" id="tabs-2" style="display: none;">
@@ -202,7 +203,7 @@ function easy_og_preview_box() {
 				 *
 				 */
 				
-				echo esc_html(easy_og('article', &$rand_posts));
+				easy_og_preview_output( easy_og('article', &$rand_posts ) );
 			?></code></pre>
 		</div>
 		<div class="wp-tab-panel code-preview" id="tabs-3" style="display: none;">
@@ -213,7 +214,7 @@ function easy_og_preview_box() {
 				 *
 				 */
 				
-				echo esc_html(easy_og('profile', &$rand_posts));
+				easy_og_preview_output( easy_og( 'profile', &$rand_posts ) );
 			?></code></pre>
 		</div>
 	<?php
@@ -241,16 +242,16 @@ function easy_og_type_box() {
 			<p>The <strong>website</strong> type is used on the front page and most archive pages.</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p><input type="checkbox" name="easy_og_options[article-pubdate]" ' . checked( $options['article-pubdate'], 'on', false ) . '> Include article published datetime</p>
-			<p><input type="checkbox" name="easy_og_options[article-moddate]" ' . checked( $options['article-moddate'], 'on', false ) . '> Include article modified datetime</p>
-			<p><input type="checkbox" name="easy_og_options[article-tag]" ' . checked( $options['article-tag'], 'on', false ) . '> Include article tags</p>
+			<p><input type="checkbox" id="easy_og_options_article-pubdate" name="easy_og_options[article-pubdate]" ' . checked( $options['article-pubdate'], 'on', false ) . '> Include article published datetime</p>
+			<p><input type="checkbox" id="easy_og_options_article-moddate" name="easy_og_options[article-moddate]" ' . checked( $options['article-moddate'], 'on', false ) . '> Include article modified datetime</p>
+			<p><input type="checkbox" id="easy_og_options_article-article-tag" name="easy_og_options[article-tag]" ' . checked( $options['article-tag'], 'on', false ) . '> Include article tags</p>
 			<p>Where should we get the data for OpenGraph article tags? <strong>' . $options['article-cattag'] . '</strong></p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
 			<p>The <strong>profile</strong> type is used on author archive pages.</p>
-			<p><input type="checkbox" name="easy_og_options[profile-status]" ' . checked( $options['profile-status'], 'on', false ) . '> Enable the <strong>profile</strong> type</p>
-			<p><input type="checkbox" name="easy_og_options[profile-realnames]" ' . checked( $options['profile-realnames'], 'on', false ) . '> Include first and last names (if available)</p>
-			<p><input type="checkbox" name="easy_og_options[profile-usernames]" ' . checked( $options['profile-usernames'], 'on', false ) . '> Include usernames</p>
+			<p><input type="checkbox" id="easy_og_options_profile-status" name="easy_og_options[profile-status]" ' . checked( $options['profile-status'], 'on', false ) . '> Enable the <strong>profile</strong> type</p>
+			<p><input type="checkbox" id="easy_og_options_profile-realnames" name="easy_og_options[profile-realnames]" ' . checked( $options['profile-realnames'], 'on', false ) . '> Include first and last names (if available)</p>
+			<p><input type="checkbox" id="easy_og_options_profile-usernames" name="easy_og_options[profile-usernames]" ' . checked( $options['profile-usernames'], 'on', false ) . '> Include usernames</p>
 		</div>';
 }
 
@@ -279,14 +280,14 @@ function easy_og_image_box() {
 			echo '</div>
 			
 			<p><strong>Note:</strong> If no default is set, we will use your active theme&rsquo;s sample screenshot.</p>
-			<p><input type="checkbox" name="easy_og_options[image-dimensions]" ' . checked( $options['image-dimensions'], 'on', false ) . '> Include image dimensions, if available</i></strong></p>
+			<p><input type="checkbox" id="easy_og_options_image-dimensions" name="easy_og_options[image-dimensions]" ' . checked( $options['image-dimensions'], 'on', false ) . '> Include image dimensions, if available</i></strong></p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p><input type="checkbox" name="easy_og_options[image-featured]" ' . checked( $options['image-featured'], 'on', false ) . '> Use a post or page&rsquo;s featured image, if available <strong><i>(Recommended)</i></strong></p>
-			<p><input type="checkbox" name="easy_og_options[image-scan]" ' . checked( $options['image-scan'], 'on', false ) . '> Provide additional image options by scanning a post or page for embedded images</p>
+			<p><input type="checkbox" id="easy_og_options_image-featured" name="easy_og_options[image-featured]" ' . checked( $options['image-featured'], 'on', false ) . '> Use a post or page&rsquo;s featured image, if available <strong><i>(Recommended)</i></strong></p>
+			<p><input type="checkbox" id="easy_og_options_image-scan" name="easy_og_options[image-scan]" ' . checked( $options['image-scan'], 'on', false ) . '> Provide additional image options by scanning a post or page for embedded images</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
-			<p><input type="checkbox" name="easy_og_options[image-gravatar]" ' . checked( $options['image-gravatar'], 'on', false ) . '> Use a user&rsquo;s <a href="http://www.gravatar.com">Gravatar</a> on profile pages <strong><i>(Recommended)</i></strong></p>
+			<p><input type="checkbox" id="easy_og_options_image-gravatar" name="easy_og_options[image-gravatar]" ' . checked( $options['image-gravatar'], 'on', false ) . '> Use a user&rsquo;s <a href="http://www.gravatar.com">Gravatar</a> on profile pages <strong><i>(Recommended)</i></strong></p>
 		</div>';
 }
 
@@ -315,10 +316,10 @@ function easy_og_description_box() {
 			<p><textarea class="widefat" name="easy_og_options[description-long]">' . $options['description-long'] . '</textarea></p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-2" style="display: none;">
-			<p><input type="checkbox" name="easy_og_options[description-article]" ' . checked( $options['description-article'], 'on', false ) . '> Set the article description from the post excerpt, if it exists (we&rsquo;ll generate one from your content if you don&rsquo;t set one manually)</p>
+			<p><input type="checkbox" id="easy_og_options_description-article" name="easy_og_options[description-article]" ' . checked( $options['description-article'], 'on', false ) . '> Set the article description from the post excerpt, if it exists (we&rsquo;ll generate one from your content if you don&rsquo;t set one manually)</p>
 		</div>
 		<div class="wp-tab-panel" id="tabs-3" style="display: none;">
-			<p><input type="checkbox" name="easy_og_options[description-profile]" ' . checked( $options['description-article'], 'on', false ) . '> Set the profile description from the author&rsquo;s biography, if it exists</p>
+			<p><input type="checkbox" id="easy_og_options-description-profile" name="easy_og_options[description-profile]" ' . checked( $options['description-profile'], 'on', false ) . '> Set the profile description from the author&rsquo;s biography, if it exists</p>
 		</div>';
 }
 
@@ -368,4 +369,33 @@ function easy_og_disable_metabox_ordering($action) {
     	die;
     }
 }
+
+
+/**
+ *
+ * Print out, line by line, an easy_og demo output
+ *
+ */
+ 
+function easy_og_preview_output($output) {
+
+	$lines = explode("\n", $output);
+	
+	if ( count($lines ) > 0 )
+	{
+		foreach ( $lines as $line )
+		{
+			if ( preg_match ( '/\<meta property="([0-9a-zA-Z:_-]+)"/',  $line, $span_class ) )
+			{
+				
+				echo '<span class="code-preview-' . esc_attr ( str_replace( ':', '_', $span_class[1] ) ) . '">' . esc_html ( $line ) . "\n" . '</span>' ;
+			}
+			else {
+				echo esc_html ( $line ) . "\n";
+			}
+		}
+	}
+
+}
+
 add_action('check_ajax_referer', 'easy_og_disable_metabox_ordering');

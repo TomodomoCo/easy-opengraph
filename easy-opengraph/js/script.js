@@ -91,4 +91,28 @@ jQuery(document).ready( function($) {
 		
 		tb_remove();
 	}
+	
+	// Hide preview output where options are unchecked
+	$.fn.updatePreviewOutput = function() {
+		
+		($('#easy_og_options_article-pubdate').prop('checked')) ? $('.code-preview-article_published_time').show() : $('.code-preview-article_published_time').hide();
+		($('#easy_og_options_article-moddate').prop('checked')) ? $('.code-preview-article_modified_time').show() : $('.code-preview-article_modified_time').hide();
+		($('#easy_og_options_article-article-tag').prop('checked')) ? $('.code-preview-article_tag').show() : $('.code-preview-article_tag').hide();
+		($('#easy_og_options_profile-realnames').prop('checked')) ? $('.code-preview-profile_first_name').show() : $('.code-preview-profile_first_name').hide();
+		($('#easy_og_options_profile-realnames').prop('checked')) ? $('.code-preview-profile_last_name').show() : $('.code-preview-profile_last_name').hide();
+		($('#easy_og_options_profile-usernames').prop('checked')) ? $('.code-preview-profile_username').show() : $('.code-preview-profile_username').hide();
+		($('#easy_og_options_image-dimensions').prop('checked')) ? $('.code-preview-og_image_width').show() : $('.code-preview-og_image_width').hide();
+		($('#easy_og_options_image-dimensions').prop('checked')) ? $('.code-preview-og_image_height').show() : $('.code-preview-og_image_height').hide();
+		($('#easy_og_options_site-name').prop('checked')) ? $('.code-preview-og_site_name').show() : $('.code-preview-og_site_name').hide();
+		($('#easy_og_options_description-status').prop('checked')) ? $('.code-preview-og_description').show() : $('.code-preview-og_description').hide();
+		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_admins').show() : $('.code-preview-fb_admins').hide();
+		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_app_id').show() : $('.code-preview-fb_app_id').hide();		
+	};
+	
+	$('input:checkbox').click(function() {
+		$().updatePreviewOutput();
+	});
+	
+	$().updatePreviewOutput(); // run on load too
+	
 });
