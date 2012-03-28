@@ -128,7 +128,7 @@ function easy_og_settings() {
 	add_meta_box('easy_og-locale', '<input name="easy_og_options[locale-status]" type="checkbox" ' . checked( $options['locale-status'], 'on', false ) . '> Locale', 'easy_og_locale', 'easy_og_box', 'normal', 'core');
 	
 	// Facebook-specific Properties
-	add_meta_box('easy_og-fbprops', '<input id="easy_og_options_fbprops-status" name="easy_og_options[fbprops-status]" type="checkbox" ' . checked( $options['fbprops-status'], 'on', false ) . '> Facebook-specific Properties_box', 'easy_og_fbprops', 'easy_og', 'normal', 'core');
+	add_meta_box('easy_og-fbprops', '<input id="easy_og_options_fbprops-status" name="easy_og_options[fbprops-status]" type="checkbox" ' . checked( $options['fbprops-status'], 'on', false ) . '> Facebook-specific Properties_box', 'easy_og_fbprops_box', 'easy_og', 'normal', 'core');
 	
 	?>
 	<div class="wrap">
