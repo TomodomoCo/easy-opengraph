@@ -191,7 +191,7 @@ function easy_og_preview_box() {
 				 *
 				 */
 				
-				esc_html(easy_og('website_demo'));
+				echo esc_html(easy_og(true));
 			?></code></pre>
 		</div>
 		<div class="wp-tab-panel code-preview" id="tabs-2" style="display: none;">
@@ -202,7 +202,7 @@ function easy_og_preview_box() {
 				 *
 				 */
 				
-				easy_og('article_demo');
+				echo esc_html(easy_og(true, &$rand_posts));
 			?></code></pre>
 		</div>
 		<div class="wp-tab-panel code-preview" id="tabs-3" style="display: none;">
@@ -213,7 +213,7 @@ function easy_og_preview_box() {
 				 *
 				 */
 				
-				easy_og('profile_demo');
+				echo esc_html(easy_og(true, &$rand_posts));
 			?></code></pre>
 		</div>
 	<?php

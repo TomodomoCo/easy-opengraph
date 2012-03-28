@@ -351,13 +351,18 @@ function easy_og_fbprops($options, $posts) {
 	}
 }
 
-function easy_og($demotype = NULL) {
+function easy_og($should_demo = false, $posts = null) {
 	// Get options
 	$options = get_option('easy_og_options');
-	global $posts;
 	
-	if ( ($demotype == 'website_demo') || ($demotype == 'article_demo') || ($demotype == 'profile_demo') ) {
-		return;
+	if ( !$posts )
+	{
+		global $posts;
+	}
+	
+	if ( $should_demo )
+	{
+		ob_start();
 	}
 	
 	// og:title
@@ -386,6 +391,13 @@ function easy_og($demotype = NULL) {
 	
 	// newline for nicer output
 	echo "\n";
+	
+	if ( $should_demo )
+	{
+		$demo_output = ob_get_contents();
+		ob_end_clean();
+		return $demo_output;
+	}
 
 }
 
