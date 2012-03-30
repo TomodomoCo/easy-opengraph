@@ -135,6 +135,7 @@ function easy_og_settings() {
 		<div class="icon32" id="icon-opengraph"><br></div>
 		<h2>Easy OpenGraph Settings</h2>
 		<p><strong>Easy OpenGraph</strong> is ready to work out of the box, but we've provided some settings below so you can personalize the output.</p>
+		<noscript><p><strong>NOTE:</strong> The <em>Code Preview</em> feature requires JavaScript to be switched on, or it will not display an accurate representation of the code that will be added to your site.</p></noscript>
 		<form method="post" action="options.php">
 			<?php
 			
@@ -159,6 +160,12 @@ function easy_og_settings() {
 			</div>
 		</form>
 	</div>
+	<script type="text/javascript">
+	//<![CDATA[
+	// glue for code preview show/hider on uploaded image
+	var EASY_OG_IMG_UPLOADED = <?php $options = get_option('easy_og_options'); echo ( $options['image-uploaded'] ) ? 'true' : 'false';?>
+	//]]>
+	</script>	
 	<?php
 }
 
@@ -385,7 +392,22 @@ function easy_og_preview_output($output) {
 	{
 		foreach ( $lines as $line )
 		{
-			if ( preg_match ( '/\<meta property="([0-9a-zA-Z:_-]+)"/',  $line, $span_class ) )
+			if ( preg_match('/<!--og_preview_([0-9a-zA-Z:_-]+)-->/', $line, $span_class ) )
+			{
+				
+				preg_match ( '/\<meta property="([0-9a-zA-Z:_-]+)"/',  $line, $meta );
+			
+				$line = preg_replace('/<!--og_preview_([0-9a-zA-Z:_-]+)-->/', '', $line);
+				
+				if ( $meta[1] == 'og:image:height' || $meta[1] == 'og:image:width' )
+				{
+					echo '<span class="code-preview-' . esc_attr ( str_replace( ':', '_', $span_class[1] ) ) . ' code-preview-' . esc_attr ( str_replace( ':', '_', $meta[1] ) ) . '">' . esc_html ( $line ) . "\n" . '</span>' ;
+				}
+				else {		
+					echo '<span class="code-preview-' . esc_attr ( str_replace( ':', '_', $span_class[1] ) ) . '">' . esc_html ( $line ) . "\n" . '</span>' ;
+				}		
+			}		
+			else if ( preg_match ( '/\<meta property="([0-9a-zA-Z:_-]+)"/',  $line, $span_class ) )
 			{
 				
 				echo '<span class="code-preview-' . esc_attr ( str_replace( ':', '_', $span_class[1] ) ) . '">' . esc_html ( $line ) . "\n" . '</span>' ;

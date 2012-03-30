@@ -95,18 +95,329 @@ jQuery(document).ready( function($) {
 	// Hide preview output where options are unchecked
 	$.fn.updatePreviewOutput = function() {
 		
+		// simple on/off display options
 		($('#easy_og_options_article-pubdate').prop('checked')) ? $('.code-preview-article_published_time').show() : $('.code-preview-article_published_time').hide();
 		($('#easy_og_options_article-moddate').prop('checked')) ? $('.code-preview-article_modified_time').show() : $('.code-preview-article_modified_time').hide();
 		($('#easy_og_options_article-article-tag').prop('checked')) ? $('.code-preview-article_tag').show() : $('.code-preview-article_tag').hide();
 		($('#easy_og_options_profile-realnames').prop('checked')) ? $('.code-preview-profile_first_name').show() : $('.code-preview-profile_first_name').hide();
 		($('#easy_og_options_profile-realnames').prop('checked')) ? $('.code-preview-profile_last_name').show() : $('.code-preview-profile_last_name').hide();
 		($('#easy_og_options_profile-usernames').prop('checked')) ? $('.code-preview-profile_username').show() : $('.code-preview-profile_username').hide();
-		($('#easy_og_options_image-dimensions').prop('checked')) ? $('.code-preview-og_image_width').show() : $('.code-preview-og_image_width').hide();
-		($('#easy_og_options_image-dimensions').prop('checked')) ? $('.code-preview-og_image_height').show() : $('.code-preview-og_image_height').hide();
 		($('#easy_og_options_site-name').prop('checked')) ? $('.code-preview-og_site_name').show() : $('.code-preview-og_site_name').hide();
 		($('#easy_og_options_description-status').prop('checked')) ? $('.code-preview-og_description').show() : $('.code-preview-og_description').hide();
 		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_admins').show() : $('.code-preview-fb_admins').hide();
 		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_app_id').show() : $('.code-preview-fb_app_id').hide();
+		
+		// image display options
+		
+		// scanned images
+		($('#easy_og_options_image-scan').prop('checked')) ? $('.code-preview-image_scan').show() : $('.code-preview-image_scan').hide();
+		if ($('#easy_og_options_image_scan').prop('checked'))
+		{
+			$('#easy_og_options_image-scan').each(function() {
+				if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+				{
+					$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+				}
+			});
+		}
+		
+		if (EASY_OG_IMG_UPLOADED)
+		{
+			$('.code-preview-image_default_theme_screenshot_article,.code-preview-image_default_theme_screenshot_profile,.code-preview-image_default_theme_screenshot_website').hide();
+			$('.code-preview-image_default_uploaded_article').each(function() {
+				
+				$(this).show();
+				
+				if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+				{
+					$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+				}
+			});
+			
+			$('.code-preview-image_default_uploaded_profile').each(function() {
+				
+				$(this).show();
+				
+				if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+				{
+					$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+				}
+			});
+			$('.code-preview-image_default_uploaded_website').each(function() {
+				
+				$(this).show();
+				
+				if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+				{
+					$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+				}
+			});
+		}
+
+		// if featured image is checked
+		if ($('#easy_og_options_image-featured').prop('checked'))
+		{
+			if ($('.code-preview-image_post_thumbnail_article').length > 0)
+			{
+				$('.code-preview-image_post_thumbnail_article').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+
+
+				$('.code-preview-image_default_uploaded_article').hide();
+				$('.code-preview-image_default_theme_screenshot_article').hide();
+			}
+			else {
+				if (EASY_OG_IMG_UPLOADED)
+				{
+					$('.code-preview-image_default_uploaded_article').each(function() {
+						
+						$(this).show();
+						
+						if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+						{
+							$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+						}
+					});
+				}
+				else {
+					$('.code-preview-image_default_theme_screenshot_article').each(function() {
+						
+						$(this).show();
+						
+						if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+						{
+							$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+						}
+					});
+				}
+			}
+			
+			if ($('.code-preview-image_post_thumbnail_website').length > 0)
+			{
+				$('.code-preview-image_post_thumbnail_website').each(function() {
+						
+						$(this).show();
+						
+						if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+						{
+							$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+						}
+				});
+				$('.code-preview-image_default_uploaded_website').hide();
+				$('.code-preview-image_default_theme_screenshot_website').hide();
+			}
+			else {
+				if (EASY_OG_IMG_UPLOADED)
+				{
+					$('.code-preview-image_default_uploaded_website').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+				}
+				else {
+					$('.code-preview-image_default_theme_screenshot_website').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+				}
+			}			
+			
+		}
+		else {
+			$('.code-preview-image_post_thumbnail_article').hide();
+			$('.code-preview-image_post_thumbnail_website').hide();			
+			$('.code-preview-image_post_thumbnail_profile').hide();
+			
+			if (EASY_OG_IMG_UPLOADED)
+			{
+			
+				$('.code-preview-image_default_theme_screenshot_website').hide();
+				$('.code-preview-image_default_theme_screenshot_article').hide();
+				$('.code-preview-image_default_theme_screenshot_profile').hide();
+				
+				$('.code-preview-image_default_uploaded_website').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+				
+				$('.code-preview-image_default_uploaded_article').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});	
+				
+				$('.code-preview-image_default_uploaded_profile').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});	
+				
+			}
+			else {
+			
+				$('.code-preview-image_default_uploaded_website').hide();
+				$('.code-preview-image_default_uploaded_article').hide();
+				$('.code-preview-image_default_uploaded_profile').hide();
+			
+				$('.code-preview-image_default_theme_screenshot_website').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+				
+				$('.code-preview-image_default_theme_screenshot_article').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});	
+				
+				$('.code-preview-image_default_theme_screenshot_profile').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});	
+			
+			}			
+		}
+
+		
+		// if Gravatar enabled
+		if ($('#easy_og_options_image-gravatar').prop('checked'))
+		{
+			$('.code-preview-image_gravatar_profile').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+			$('.code-preview-image_post_thumbnail_profile').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+			$('.code-preview-image_default_theme_screenshot_profile').hide();
+			$('.code-preview-image_default_uploaded_profile').hide();	
+		}
+		else {
+			$('.code-preview-image_gravatar_profile').hide();
+			
+			if ($('.code-preview-image_post_thumbnail_profile').length > 0 && $('#easy_og_options_image-featured').prop('checked'))
+			{
+				$('.code-preview-image_post_thumbnail_profile').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+				$('.code-preview-image_default_theme_screenshot_profile').hide();
+				$('.code-preview-image_default_uploaded_profile').hide();								
+			}
+			else if (EASY_OG_IMG_UPLOADED)
+			{
+				$('.code-preview-image_default_uploaded_profile').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+				$('.code-preview-image_post_thumbnail_profile').hide();
+				$('.code-preview-image_default_theme_screenshot_profile').hide();
+			}
+			else {
+				$('.code-preview-image_default_theme_screenshot_profile').each(function() {
+					
+					$(this).show();
+					
+					if ($(this).hasClass('code-preview-og_image_width') || $(this).hasClass('code-preview-og_image_height'))
+					{
+						$('#easy_og_options_image-dimensions').prop('checked') ? $(this).show() : $(this).hide();
+					}
+				});
+				$('.code-preview-image_default_uploaded_profile').hide();
+				$('.code-preview-image_post_thumbnail_profile').hide();				
+			}
+		}
+		
+		// description display options
+		
+		
+		// profile description
+		if ($('#easy_og_options-description-profile').prop('checked') && $('.code-preview-description_generated_profile').length > 0)
+		{
+			$('.code-preview-description_generated_profile').show();
+			$('.code-preview-description_default_profile').hide();
+		}
+		else {
+			$('.code-preview-description_generated_profile').hide();
+			$('.code-preview-description_default_profile').show();
+		}
+		
+		// article description
+		if ($('#easy_og_options_description-article').prop('checked') && $('.code-preview-description_generated_article').length > 0)
+		{
+			$('.code-preview-description_generated_article').show();
+			$('.code-preview-description_default_article').hide();
+		}
+		else {
+			$('.code-preview-description_generated_article').hide();
+			$('.code-preview-description_default_article').show();
+		}
+		
 	};
 	
 	$('input:checkbox').click(function() {
