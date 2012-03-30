@@ -103,7 +103,6 @@ jQuery(document).ready( function($) {
 		($('#easy_og_options_profile-realnames').prop('checked')) ? $('.code-preview-profile_last_name').show() : $('.code-preview-profile_last_name').hide();
 		($('#easy_og_options_profile-usernames').prop('checked')) ? $('.code-preview-profile_username').show() : $('.code-preview-profile_username').hide();
 		($('#easy_og_options_site-name').prop('checked')) ? $('.code-preview-og_site_name').show() : $('.code-preview-og_site_name').hide();
-		($('#easy_og_options_description-status').prop('checked')) ? $('.code-preview-og_description').show() : $('.code-preview-og_description').hide();
 		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_admins').show() : $('.code-preview-fb_admins').hide();
 		($('#easy_og_options_fbprops-status').prop('checked')) ? $('.code-preview-fb_app_id').show() : $('.code-preview-fb_app_id').hide();
 		
@@ -394,28 +393,44 @@ jQuery(document).ready( function($) {
 		}
 		
 		// description display options
-		
-		
-		// profile description
-		if ($('#easy_og_options-description-profile').prop('checked') && $('.code-preview-description_generated_profile').length > 0)
+
+		if ($('#easy_og_options_description-status').prop('checked')) 
 		{
-			$('.code-preview-description_generated_profile').show();
+		
 			$('.code-preview-description_default_profile').hide();
-		}
-		else {
 			$('.code-preview-description_generated_profile').hide();
-			$('.code-preview-description_default_profile').show();
-		}
-		
-		// article description
-		if ($('#easy_og_options_description-article').prop('checked') && $('.code-preview-description_generated_article').length > 0)
-		{
-			$('.code-preview-description_generated_article').show();
 			$('.code-preview-description_default_article').hide();
+			$('.code-preview-description_generated_article').hide();
+					
+			// profile description
+			if ($('#easy_og_options-description-profile').prop('checked') && $('.code-preview-description_generated_profile').length > 0)
+			{
+				$('.code-preview-description_generated_profile').show();
+				$('.code-preview-description_default_profile').hide();
+			}
+			else {
+				$('.code-preview-description_generated_profile').hide();
+				$('.code-preview-description_default_profile').show();
+			}
+			
+			// article description
+			if ($('#easy_og_options_description-article').prop('checked') && $('.code-preview-description_generated_article').length > 0)
+			{
+				$('.code-preview-description_generated_article').show();
+				$('.code-preview-description_default_article').hide();
+			}
+			else {
+				$('.code-preview-description_generated_article').hide();
+				$('.code-preview-description_default_article').show();
+			}	
 		}
 		else {
+			$('.code-preview-description_default_profile').hide();
+			$('.code-preview-description_generated_profile').hide();
+			$('.code-preview-description_default_article').hide();
 			$('.code-preview-description_generated_article').hide();
-			$('.code-preview-description_default_article').show();
+			$('.code-preview-description_default_website').hide();
+			$('.code-preview-description_generated_website').hide();
 		}
 		
 	};
