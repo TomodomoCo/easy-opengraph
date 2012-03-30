@@ -214,13 +214,13 @@ function easy_og_image_post_thumbnail($options, $posts, $uploads, $parsed_base, 
 	$image_info = wp_get_attachment_image_src($image_id, 'medium');
 	$ii_parsed = parse_url( $image_info[0] );
 	
-	if ( ! $ii_parsed['host'] )
+	if ( !array_key_exists('host', $ii_parsed) )
 	{
-		$image_url = parse_url ( $uploads, PHP_URL_SCHEME) . '://' . parse_url( $uploads, PHP_URL_HOST );
+		$image_url = parse_url ( $uploads['url'], PHP_URL_SCHEME) . '://' . parse_url( $uploads['url'], PHP_URL_HOST );
 		
-		if ( parse_url ($uploads, PHP_URL_PORT ) )
+		if ( parse_url ($uploads['url'], PHP_URL_PORT ) )
 		{
-			$image_url .= parse_url ($uploads, PHP_URL_PORT );
+			$image_url .= parse_url ($uploads['url'], PHP_URL_PORT );
 		}
 		
 		$image_url .= $image_info[0];
@@ -264,14 +264,13 @@ function easy_og_image_default_uploaded($options, $posts, $uploads, $parsed_base
 	$image_info = wp_get_attachment_image_src($options['image-uploaded'], 'medium');
 	$ii_parsed = parse_url ( $image_info[0] );
 	
-	if ( ! $ii_parsed['host'] )
+	if ( ! array_key_exists('host', $ii_parsed)  )
 	{
-		// reconstruct host portion
-		$image_url = parse_url ( $uploads, PHP_URL_SCHEME) . '://' . parse_url( $uploads, PHP_URL_HOST );
+		$image_url = parse_url ( $uploads['url'], PHP_URL_SCHEME) . '://' . parse_url( $uploads['url'], PHP_URL_HOST );
 		
-		if ( parse_url ($uploads, PHP_URL_PORT ) )
+		if ( parse_url ($uploads['url'], PHP_URL_PORT ) )
 		{
-			$image_url .= parse_url ($uploads, PHP_URL_PORT );
+			$image_url .= parse_url ($uploads['url'], PHP_URL_PORT );
 		}
 		
 		$image_url .= $image_info[0];
@@ -349,14 +348,13 @@ function easy_og_image_scan_post($options, $posts, $demo_mode = false) {
 						$image_info = wp_get_attachment_image_src($image_id[1][0], 'medium');
 						$ii_parsed = parse_url ( $image_info[0] );
 						
-						if ( ! $ii_parsed['host'] )
+						if ( !array_key_exists('host', $ii_parsed) )
 						{
-							// reconstruct host portion
-							$image_url = parse_url ( $uploads, PHP_URL_SCHEME) . '://' . parse_url( $uploads, PHP_URL_HOST );
+							$image_url = parse_url ( $uploads['url'], PHP_URL_SCHEME) . '://' . parse_url( $uploads['url'], PHP_URL_HOST );
 							
-							if ( parse_url ($uploads, PHP_URL_PORT ) )
+							if ( parse_url ($uploads['url'], PHP_URL_PORT ) )
 							{
-								$image_url .= parse_url ($uploads, PHP_URL_PORT );
+								$image_url .= parse_url ($uploads['url'], PHP_URL_PORT );
 							}
 							
 							$image_url .= $image_info[0];
@@ -416,6 +414,8 @@ function easy_og_image($options, $posts, $demo_mode = false) {
 			break;
 			
 			case 'profile':
+				$uploads = wp_upload_dir();
+				$parsed_base = parse_url($uploads['baseurl']);
 				easy_og_image_gravatar($options, &$posts, $demo_mode);
 				easy_og_image_default_uploaded($options, &$posts, $uploads, $parsed_base, $demo_mode);
 				easy_og_image_autodetect_theme_screenshot($options, &$posts, $demo_mode);				
