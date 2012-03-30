@@ -487,17 +487,18 @@ function easy_og_url($options, $posts, $demo_mode = false) {
 	if ( $demo_mode )
 	{
 		$post = $posts[0];
+		
+		// Nested conditionals... oh it burns
+		if ( $demo_mode == 'article' ) {
+			echo '<meta property="og:url" content="' . get_permalink() .'">' . "\n";
+		} elseif ( $demo_mode == 'profile' ) {
+			echo '<meta property="og:url" content="' . get_author_posts_url($posts[0]->post_author) .'">' . "\n";
+		} elseif ( $demo_mode == 'website' ) {
+			echo '<meta property="og:url" content="' . site_url() .'">' . "\n";
+		}
 	}
 	
-	if ( is_single() || is_page() || $demo_mode == 'article' ) {
-		echo '<meta property="og:url" content="' . get_permalink() .'">' . "\n";
-	} elseif ( is_author() || $demo_mode == 'profile' ) {
-		echo '<meta property="og:url" content="' . get_author_posts_url($posts[0]->post_author) .'">' . "\n";
-	} elseif ( is_front_page() || is_home() || $demo_mode == 'website' ) {
-		echo '<meta property="og:url" content="' . site_url() .'">' . "\n";
-	} else {
-		echo '<meta property="og:url" content="' . esc_url( $_SERVER['REQUEST_URI'] ) .'">' . "\n";
-	}
+	echo '<meta property="og:url" content="' . esc_url( parse_url ( site_url(), PHP_URL_SCHEME) . '://' . parse_url( site_url(), PHP_URL_HOST ) . $_SERVER['REQUEST_URI'] ) .'">' . "\n";
 }
 
 function easy_og_site_name($options, $posts, $demo_mode = false) {
