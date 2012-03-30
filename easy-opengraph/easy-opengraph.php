@@ -212,11 +212,29 @@ function easy_og_image_post_thumbnail($options, $posts, $uploads, $parsed_base, 
 	// Get featured image ID and image info
 	$image_id = get_post_thumbnail_id();
 	$image_info = wp_get_attachment_image_src($image_id, 'medium');
+	$ii_parsed = parse_url( $image_info[0] );
+	
+	if ( ! $ii_parsed['host'] )
+	{
+		$image_url = parse_url ( $uploads, PHP_URL_SCHEME) . '://' . parse_url( $uploads, PHP_URL_HOST );
+		
+		if ( parse_url ($uploads, PHP_URL_PORT ) )
+		{
+			$image_url .= parse_url ($uploads, PHP_URL_PORT );
+		}
+		
+		$image_url .= $image_info[0];
+				
+	}
+	else 
+	{
+		$image_url = $image_info[0];
+	}
 	
 	if ( $image_info[0] )
 	{	
 		// Echo it out
-		echo '<meta property="og:image" content="' . esc_attr( $uploads['baseurl'] . str_replace($parsed_base['scheme'] . '://' . $parsed_base['host'] . $parsed_base['path'], '', $image_info[0]) ) . '">' . $demo_tag . "\n";
+		echo '<meta property="og:image" content="' . esc_attr( $image_url ) . '">' . $demo_tag . "\n";
 		
 		// Show dimensions
 		if ( $options['image-dimensions'] == 'on' ) {
@@ -244,9 +262,29 @@ function easy_og_image_default_uploaded($options, $posts, $uploads, $parsed_base
 
 	// Get the image info
 	$image_info = wp_get_attachment_image_src($options['image-uploaded'], 'medium');
+	$ii_parsed = parse_url ( $image_info[0] );
+	
+	if ( ! $ii_parsed['host'] )
+	{
+		// reconstruct host portion
+		$image_url = parse_url ( $uploads, PHP_URL_SCHEME) . '://' . parse_url( $uploads, PHP_URL_HOST );
+		
+		if ( parse_url ($uploads, PHP_URL_PORT ) )
+		{
+			$image_url .= parse_url ($uploads, PHP_URL_PORT );
+		}
+		
+		$image_url .= $image_info[0];
+				
+	}
+	else 
+	{
+		$image_url = $image_info[0];
+	}	
+	
 	
 	// Echo it out
-	echo '<meta property="og:image" content="' .esc_attr ( $uploads['baseurl'] . str_replace($parsed_base['scheme'] . '://' . $parsed_base['host'] . $parsed_base['path'], '', $image_info[0]) ) . '">'  . $demo_tag .  "\n";
+	echo '<meta property="og:image" content="' .esc_attr ( $image_url ) . '">'  . $demo_tag .  "\n";
 	
 	// Show dimensions
 	if ( $options['image-dimensions'] == 'on' ) {
@@ -309,9 +347,28 @@ function easy_og_image_scan_post($options, $posts, $demo_mode = false) {
 						
 						// Get the image info
 						$image_info = wp_get_attachment_image_src($image_id[1][0], 'medium');
+						$ii_parsed = parse_url ( $image_info[0] );
+						
+						if ( ! $ii_parsed['host'] )
+						{
+							// reconstruct host portion
+							$image_url = parse_url ( $uploads, PHP_URL_SCHEME) . '://' . parse_url( $uploads, PHP_URL_HOST );
+							
+							if ( parse_url ($uploads, PHP_URL_PORT ) )
+							{
+								$image_url .= parse_url ($uploads, PHP_URL_PORT );
+							}
+							
+							$image_url .= $image_info[0];
+									
+						}
+						else 
+						{
+							$image_url = $image_info[0];
+						}				
 						
 						// Echo it out
-						echo '<meta property="og:image" content="' . esc_url(  $uploads['baseurl'] . str_replace($parsed_base['scheme'] . '://' . $parsed_base['host'] . $parsed_base['path'], '', $image_info[0]) ) . '">' . $demo_tag . "\n";
+						echo '<meta property="og:image" content="' . esc_url( $image_url ) . '">' . $demo_tag . "\n";
 						
 						// Show dimensions
 						if ( $options['image-dimensions'] == 'on' ) {
