@@ -202,6 +202,7 @@ function easy_og_image_post_thumbnail($options, $posts, $uploads, $parsed_base, 
 	if ( $demo_mode )
 	{
 		$demo_tag = '<!--og_preview_image_post_thumbnail_' . esc_attr ( $demo_mode) . '-->';
+		$post = $posts[0];
 	}
 	else {
 		$demo_tag = '';
@@ -402,6 +403,7 @@ function easy_og_image($options, $posts, $demo_mode = false) {
 		{
 			
 			case 'article':
+				$uploads = wp_upload_dir();
 				easy_og_image_scan_post($options, &$posts, $demo_mode);	
 				easy_og_image_post_thumbnail($options, &$posts, $uploads, $parsed_base, $demo_mode);
 			// deliberately no 'break' here. we want article to run the above, plus all the 'website' ones
