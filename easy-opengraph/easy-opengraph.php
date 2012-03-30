@@ -216,7 +216,7 @@ function easy_og_image_post_thumbnail($options, $posts, $uploads, $parsed_base, 
 	if ( $image_info[0] )
 	{	
 		// Echo it out
-		echo '<meta property="og:image" content="' . esc_attr( $uploads['baseurl'] . str_replace($parsed_base[path], '', $image_info[0]) ) . '">' . $demo_tag . "\n";
+		echo '<meta property="og:image" content="' . esc_attr( $uploads['baseurl'] . str_replace($parsed_base['scheme'] . '://' . $parsed_base['host'] . $parsed_base['path'], '', $image_info[0]) ) . '">' . $demo_tag . "\n";
 		
 		// Show dimensions
 		if ( $options['image-dimensions'] == 'on' ) {
@@ -311,7 +311,7 @@ function easy_og_image_scan_post($options, $posts, $demo_mode = false) {
 						$image_info = wp_get_attachment_image_src($image_id[1][0], 'medium');
 						
 						// Echo it out
-						echo '<meta property="og:image" content="' . esc_url( $uploads['baseurl'] . str_replace($parsed_base[path], '', $image_info[0]) ) . '">' . $demo_tag . "\n";
+						echo '<meta property="og:image" content="' . esc_url(  $uploads['baseurl'] . str_replace($parsed_base['scheme'] . '://' . $parsed_base['host'] . $parsed_base['path'], '', $image_info[0]) ) . '">' . $demo_tag . "\n";
 						
 						// Show dimensions
 						if ( $options['image-dimensions'] == 'on' ) {
