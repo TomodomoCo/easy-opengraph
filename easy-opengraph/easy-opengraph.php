@@ -400,10 +400,10 @@ function easy_og_image_scan_post($options, $posts, $demo_mode = false) {
 					// We couldn't get the ID. Let's do it the old fashioned way.
 						
 						// Get fallback src
-						preg_match_all('/(src)="([^"]*)"/i', $image, $src_match);
+						preg_match_all('/src="([^"]*)"/i', $image, $src_match);
 						
 						// Echo it out
-						echo '<meta property="og:image" content="' . esc_url( $src_match[2][0] ) . '">'  . $demo_tag . "\n";
+						echo '<meta property="og:image" content="' . esc_url( $src_match[1][0] ) . '">'  . $demo_tag . "\n";
 						
 					}
 				}
@@ -496,9 +496,9 @@ function easy_og_url($options, $posts, $demo_mode = false) {
 		} elseif ( $demo_mode == 'website' ) {
 			echo '<meta property="og:url" content="' . site_url() .'">' . "\n";
 		}
+	} else {
+		echo '<meta property="og:url" content="' . esc_url( parse_url ( site_url(), PHP_URL_SCHEME) . '://' . parse_url( site_url(), PHP_URL_HOST ) . $_SERVER['REQUEST_URI'] ) .'">' . "\n";
 	}
-	
-	echo '<meta property="og:url" content="' . esc_url( parse_url ( site_url(), PHP_URL_SCHEME) . '://' . parse_url( site_url(), PHP_URL_HOST ) . $_SERVER['REQUEST_URI'] ) .'">' . "\n";
 }
 
 function easy_og_site_name($options, $posts, $demo_mode = false) {
