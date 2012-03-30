@@ -109,6 +109,27 @@ require_once( EASY_OG_PATH . 'options.php');
  */
  
 function easy_og_title($options, $posts, $demo_mode = false) {
+
+	if ( $demo_mode )
+	{
+		switch ( $demo_mode )
+		{
+			case 'website':
+				echo '<meta property="og:title" content="' . get_bloginfo('name') . '">' . "\n";
+			break;
+			
+			case 'article':
+				
+				echo '<meta property="og:title" content="' . esc_attr ( $posts[0]->post_title ) . '">' . "\n";
+			break;
+			
+			case 'profile':
+				echo '<meta property="og:title" content="' . esc_attr ( get_the_author_meta('user_nicename', $posts[0]->post_author) ) . '\'s posts">' . "\n";
+			break;
+				
+		}
+		return;
+	}
 	
 	if ( is_front_page() || is_home() || $demo_mode == 'website' ) {
 		echo '<meta property="og:title" content="' . get_bloginfo('name') . '">' . "\n";
